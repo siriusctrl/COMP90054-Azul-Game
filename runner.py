@@ -229,6 +229,11 @@ def loadParameter():
 
     options, otherjunk = parser.parse_args(sys.argv[1:] )
     assert len(otherjunk) == 0, "Unrecognized options: " + str(otherjunk)
+
+    #quick fixed on the naming, might need to be changed when the contest environment is fixed
+    options.red = "players."+options.red
+    options.blue = "players."+options.blue
+
     return options
 
 
