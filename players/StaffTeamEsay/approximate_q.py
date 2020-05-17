@@ -1,11 +1,8 @@
-import sys
-
-sys.path.append("players/StaffTeamEasy")
-
 from advance_model import *
+from utils import *
 
 
-class myPlayer(AdvancePlayer):
+class ApproximateQ(AdvancePlayer):
     # initialize
     # The following function should not be changed at all
     def __init__(self, _id):
@@ -18,8 +15,8 @@ class myPlayer(AdvancePlayer):
         return None
 
     # Each player is given 1 second to select next best move
-    # If exceeds 5 seconds, all your code will be terminated, 
-    # a random action will be selected, and you will receive 
+    # If exceeds 5 seconds, all your code will be terminated,
+    # a random action will be selected, and you will receive
     # a timeout warning
     def SelectMove(self, moves, game_state):
         return random.choice(moves)
