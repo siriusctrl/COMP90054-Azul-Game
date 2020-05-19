@@ -2,48 +2,48 @@ from advance_model import AdvanceGameRunner, ReplayRunner
 from displayer import TextGameDisplayer,GUIGameDisplayer
 from utils import *
 import sys
+import os
 import importlib
 import traceback
-import players.naive_player
-import random
-import os
+import datetime
+import time
 import pickle
+import random
+import players.random_player as random_player
+from optparse import OptionParser
 
-players_names = []
-players = [players.naive_player.myPlayer(0), players.naive_player.myPlayer(1)]
-random_seed = 90054
-warnning_time = 1
-num_of_warning = 3
-delay = 0.1
-file_path = ""
-games_results = [(0,0,0,0,0,0,0)]
+idx2rb = ["teamRed","teamBlue"]
 
-
-def loadAgent(file_list,name_list):
-    for i,file in enumerate(file_list):
+def loadAgent(file_list,name_list,superQuiet = True):
+    players = [None] * 2
+    load_errs = {}
+    for i,player_file_path in enumerate(file_list):
         player_temp = None
         try:
-            # if not name.endswith(".py"):
-            #     name += ".py"
-                
-            player_file_path = 'players.'+ file
             mymodule = importlib.import_module(player_file_path)
             # students need to name their player as follows
             player_temp = mymodule.myPlayer(i)
         except (NameError, ImportError):
-            print('Error: The team "' + player_file_path + '" could not be loaded! ', file=sys.stderr)
-            traceback.print_exc()
+            #print('Error: The team "' + player_file_path + '" could not be loaded! ', file=sys.stderr)
+            #traceback.print_exc()
+            pass
 
         except IOError:
-            print('Error: The team "' + player_file_path + '" could not be loaded! ', file=sys.stderr)
-            traceback.print_exc()
+            #print('Error: The team "' + player_file_path + '" could not be loaded! ', file=sys.stderr)
+            #traceback.print_exc()
+            pass
+        except:
+            pass
 
+        # if student's player does not exists, using random player
         if player_temp != None:
             players[i] = player_temp
-            if not options.superQuiet:
+            if not superQuiet:
                 print ('Player {} team {} agent {} loaded'.format(i,name_list[i],file_list[i]))
         else:
-            print ('\n[Error] Player {} team {} agent {} loaded\n'.format(i,name_list[i],file_list[i]))
+            players[i] = random_player.myPlayer(i)
+            load_errs[idx2rb[i]] = '[Error] Player {} team {} agent {} cannot be loaded'.format(i,name_list[i],".".join((file_list[i]).split(".")[-2:]))
+    return players, load_errs
 
 
 class HidePrint:
@@ -79,21 +79,24 @@ def run(options):
         displayer = TextGameDisplayer()
     elif options.quiet or options.superQuiet:
         displayer = None
-    # elif options.quiet:
-    #     import textDisplay
-    #     args['display'] = textDisplay.NullGraphics()
-    # elif options.super_quiet:
-    #     import textDisplay
-    #     args['display'] = textDisplay.NullGraphics()
-    #     args['muteAgents'] = True
 
-    players_names.append(options.redName)
-    players_names.append(options.blueName)
+    players_names = [options.redName, options.blueName] 
     for i in range(2):
         players_names[i] = players_names[i].replace(" ","_")
 
-    random_seed = options.setRandomSeed
+    # if random seed is not provide, using timestamp
+    if options.setRandomSeed == 90054:
+        random_seed = int(str(time.time()).replace('.', ''))
+    else:
+        random_seed = options.setRandomSeed
+    
+    # make sure random seed is traceable
+    random.seed(random_seed)
+    seed_list = [random.randint(0,1e10) for _ in range(1000)]
+    seed_idx = 0
+
     warnning_time = options.warningTimeLimit
+    startRound_warning_time = options.startRoundWarningTimeLimit
     num_of_warning = options.numOfWarnings
     file_path = options.output
 
@@ -104,27 +107,39 @@ def run(options):
         replay_dir = os.path.join(options.output,replay_dir)
         if "." not in replay_dir:
             replay_dir +=".replay"
+        if ".\\" in replay_dir:
+            replay_dir.replace(".\\","")
         replay = pickle.load(open(replay_dir,'rb'),encoding="bytes")
         ReplayRunner(replay,displayer).Run()
     else: 
+        games_results = [(0,0,0,0,0,0,0)]
         for i in range(options.multipleGames):
             # loading players
-            loadAgent([options.red,options.blue],players_names)
+            players,load_errs = loadAgent([options.red,options.blue],players_names,superQuiet= options.superQuiet)
+            is_load_err = False
+            for i,err in load_errs.items():
+                if not options.superQuiet:
+                    print (i,err)
+                is_load_err = True
+        
+            random_seed=seed_list[seed_idx]
+            seed_idx += 1
 
-            import datetime
-            f_name = players_names[0]+'-vs-'+players_names[1]+datetime.datetime.now().strftime("%d-%b-%Y-%H-%M-%S-%f")
+            if is_load_err:
+                results = {}
+                results["options"] = options
+                results["load_errs"] = load_errs
+                return results                
+
+            f_name = players_names[0]+'-vs-'+players_names[1]+"-"+datetime.datetime.now().strftime("%d-%b-%Y-%H-%M-%S-%f")
             
-            if options.setRandomSeed == 90054:
-                import time
-                random_seed = int(str(time.time()).replace('.', ''))
-
             gr = AdvanceGameRunner(players,
                             seed=random_seed,
                             time_limit=warnning_time,
+                            startRound_time_limit = startRound_warning_time,
                             warning_limit=num_of_warning,
                             displayer=displayer,
                             players_namelist=players_names)
-            print(file_path)
             with HidePrint(options.saveLog,file_path,f_name):                
                 replay = gr.Run()
 
@@ -150,7 +165,7 @@ def run(options):
                 if not options.superQuiet:
                     print("Game ({}/{}) has been recorded!\n".format(i+1,options.multipleGames))
                 record = pickle.dumps(replay)
-                with open(file_path+"/replay-"+f_name+".reply",'wb') as f:
+                with open(file_path+"/replay-"+f_name+".replay",'wb') as f:
                     f.write(record)
         _,_,r_total,b_total,r_win,b_win,tie = games_results[len(games_results)-1]
         r_avg = r_total/options.multipleGames
@@ -162,13 +177,29 @@ def run(options):
                 "Over {} games: \nPlayer {} earned {:+.2f} points in average and won {} games, winning rate {:.2f}%; \nPlayer {} earned {:+.2f} points in average and won {} games, winning rate {:.2f}%; \nAnd {} games tied.".format(options.multipleGames,
                 players_names[0],r_avg,r_win,r_win_rate,players_names[1],b_avg,b_win,b_win_rate,tie))
 
+        # return results as statistics
+        results = {}
+        results["r_avg"] = r_avg
+        results["b_avg"] = b_avg
+        results["r_win"] = r_win
+        results["b_win"] = b_win
+        results["r_win_rate"] = r_win_rate
+        results["b_win_rate"] = b_win_rate
+        results["r_name"] = players_names[0]
+        results["b_name"] = players_names[1]
+        results["fileName"] = f_name
+        results["options"] = options
+        results["load_errs"] = load_errs
+        results["tie"] = tie
+
+        return results
+
 
 def loadParameter():
 
     """
     Processes the command used to run Azul from the command line.
     """
-    from optparse import OptionParser
     usageStr = """
     USAGE:      python runner.py <options>
     EXAMPLES:   (1) python runner.py
@@ -186,8 +217,9 @@ def loadParameter():
     parser.add_option('-q','--quiet', action='store_true', help='No text nor graphics output, only show game info', default=False)
     parser.add_option('-Q', '--superQuiet', action='store_true', help='No output at all', default=False)
     parser.add_option('-w', '--warningTimeLimit', type='float',help='Time limit for a warning of one move in seconds (default: 1)', default=1.0)
+    parser.add_option('--startRoundWarningTimeLimit', type='float',help='Time limit for a warning of initialization for each round in seconds (default: 5)', default=5.0)
     parser.add_option('-n', '--numOfWarnings', type='int',help='Num of warnings a team can get before fail (default: 3)', default=3)
-    parser.add_option('-m', '--multipleGames', type='int',help='Run multiple games in a row', default=1)
+    parser.add_option('-m', '--multipleGames', type='int',help='Run multiple games in a roll', default=1)
     parser.add_option('--setRandomSeed', type='int',help='Set the random seed, otherwise it will be completely random (default: 90054)', default=90054)
     parser.add_option('-s','--saveGameRecord', action='store_true', help='Writes game histories to a file (named by teams\' names and the time they were played) (default: False)', default=False)
     parser.add_option('-o','--output', help='output directory for replay and log (default: output)',default='output')
@@ -197,6 +229,11 @@ def loadParameter():
 
     options, otherjunk = parser.parse_args(sys.argv[1:] )
     assert len(otherjunk) == 0, "Unrecognized options: " + str(otherjunk)
+
+    #quick fixed on the naming, might need to be changed when the contest environment is fixed
+    options.red = "players."+options.red
+    options.blue = "players."+options.blue
+
     return options
 
 

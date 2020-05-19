@@ -29,7 +29,7 @@ class AdvanceGameRunner:
                  player_list, 
                  seed=1, 
                  time_limit=1, 
-                 startRound_time_limit = 1,
+                 startRound_time_limit = 5,
                  warning_limit=3, 
                  displayer = None, 
                  players_namelist = ["Alice","Bob"]):
@@ -105,7 +105,10 @@ class AdvanceGameRunner:
             gs_copy = copy.deepcopy(self.game_state)
             try:
                 func_timeout(self.startRound_time_limit,self.players[i].StartRound,args=(gs_copy,))
-            except FunctionTimedOut:
+            except AttributeError:
+                pass
+            # except FunctionTimedOut:
+            except:
                 self.warnings[i] += 1
                 if self.displayer is not None:
                     self.displayer.TimeOutWarning(self,i)
@@ -115,8 +118,6 @@ class AdvanceGameRunner:
                     player_traces = self._EndGame(player_order,isTimeOut=True,id=i)
                     return player_traces
 
-            except AttributeError:
-                pass
                     
         random.seed(self.seed_list[self.seed_idx])
         self.seed_idx += 1
@@ -134,8 +135,10 @@ class AdvanceGameRunner:
                 
                 try:
                     selected = func_timeout(self.time_limit,self.players[i].SelectMove,args=(moves_copy, gs_copy))
-                    
-                except FunctionTimedOut:
+                except AttributeError:
+                    pass    
+                # except FunctionTimedOut:
+                except:
                     self.warnings[i] += 1
                     if self.displayer is not None:
                         self.displayer.TimeOutWarning(self,i)
@@ -195,7 +198,10 @@ class AdvanceGameRunner:
                     gs_copy = copy.deepcopy(self.game_state)
                     try:
                         func_timeout(self.startRound_time_limit,self.players[i].StartRound,args=(gs_copy,))
-                    except FunctionTimedOut:
+                    except AttributeError:
+                        pass
+                    # except FunctionTimedOut:
+                    except:
                         self.warnings[i] += 1
                         if self.displayer is not None:
                             self.displayer.TimeOutWarning(self,i)
@@ -204,8 +210,6 @@ class AdvanceGameRunner:
                         if self.warnings[i] == self.warning_limit:
                             player_traces = self._EndGame(player_order,isTimeOut=True,id=i)
                             return player_traces
-                    except AttributeError:
-                        pass
                                     
                 random.seed(self.seed_list[self.seed_idx])
                 self.seed_idx += 1
