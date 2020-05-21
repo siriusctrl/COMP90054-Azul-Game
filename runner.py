@@ -140,8 +140,11 @@ def run(options):
                             warning_limit=num_of_warning,
                             displayer=displayer,
                             players_namelist=players_names)
-            with HidePrint(options.saveLog,file_path,f_name):                
-                replay = gr.Run()
+
+            # TODO by xuliny not hide my print output
+            # with HidePrint(options.saveLog,file_path,f_name):
+            #     replay = gr.Run()
+            replay = gr.Run()
 
             _,_,r_total,b_total,r_win,b_win,tie = games_results[len(games_results)-1]
             r_score = replay[0][0]
