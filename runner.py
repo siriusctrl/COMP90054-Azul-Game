@@ -24,8 +24,8 @@ def loadAgent(file_list,name_list,superQuiet = True):
             # students need to name their player as follows
             player_temp = mymodule.myPlayer(i)
         except (NameError, ImportError):
-            #print('Error: The team "' + player_file_path + '" could not be loaded! ', file=sys.stderr)
-            #traceback.print_exc()
+            print('Error: The team "' + player_file_path + '" could not be loaded! ', file=sys.stderr)
+            traceback.print_exc()
             pass
 
         except IOError:
@@ -140,8 +140,8 @@ def run(options):
                             warning_limit=num_of_warning,
                             displayer=displayer,
                             players_namelist=players_names)
-            with HidePrint(options.saveLog,file_path,f_name):                
-                replay = gr.Run()
+            #with HidePrint(options.saveLog,file_path,f_name):
+            replay = gr.Run()
 
             _,_,r_total,b_total,r_win,b_win,tie = games_results[len(games_results)-1]
             r_score = replay[0][0]

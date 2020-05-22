@@ -1,8 +1,8 @@
 numpy
 future
-TensorFlow
-keras
-scikit-learn
-scipy
-neat-python
+# TensorFlow
+# keras
+# scikit-learn
+# scipy
+# neat-python
 func_timeout
