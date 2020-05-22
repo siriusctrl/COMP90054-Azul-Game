@@ -37,7 +37,6 @@ class myPlayer(AdvancePlayer):
     # If exceeds 5 seconds, all your code will be terminated and
     # you will receive a timeout warning
     def StartRound(self, game_state: GameState):
-
         return None
 
     # Each player is given 1 second to select next best move
@@ -65,7 +64,7 @@ class myPlayer(AdvancePlayer):
                 maxQ = move_collection[key]
 
         # use epsilon greedy for now
-        print(maxQ)
+        # print(maxQ)
         if self.flipCoin():
             return curr_max
         else:
@@ -130,7 +129,7 @@ class myPlayer(AdvancePlayer):
 
         return {key: features}
 
-    def getNextState(self, game_state, action) -> GameState:
+    def getNextState(self, game_state: GameState, action) -> GameState:
         """give a state and action, return the next state"""
         next_state: GameState = deepcopy(game_state)
         next_state.ExecuteMove(self.id, action)

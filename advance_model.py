@@ -167,6 +167,9 @@ class AdvanceGameRunner:
             if self.game_state.TilesRemaining():
                 move_count+=1
                 continue
+            # FIXME : I added this part for better train Q learning
+            else:
+                print("end of round")
 
             # It is the end of round
             self.game_state.ExecuteEndOfRound()
