@@ -7,7 +7,7 @@ Description: environment for azul
 import random
 
 from model import GameState, Move, TileGrab, PlayerState
-from players.util import Counter, sample, getNextState
+from players.StaffTeamEasy.util import Counter, sample, getNextState
 
 
 class OpponentPolicy:

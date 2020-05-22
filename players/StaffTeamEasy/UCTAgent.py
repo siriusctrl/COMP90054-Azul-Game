@@ -4,13 +4,15 @@ Student id:  904904
 Description: monte carlo tree search agent
              modify from https://www.moderndescartes.com/essays/deep_dive_mcts/
 """
+import sys
+sys.path.append("players/StaffTeamEasy")
 
 from advance_model import *
 import json
 from math import sqrt, log
 
-from players.environment import OpponentNode, OpponentPolicy, simulation, score_reward, random_simulation_policy
-from players.util import get_opponent_player_id, getNextState
+from players.StaffTeamEasy.environment import OpponentNode, OpponentPolicy, simulation, score_reward, random_simulation_policy
+from players.StaffTeamEasy.util import get_opponent_player_id, getNextState
 
 N_ITER = "n_iter"
 CP = "Cp"
