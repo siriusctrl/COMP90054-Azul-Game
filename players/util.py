@@ -5,8 +5,17 @@ Date:        2020-5-22 01:58:49
 Description: some helper function
 """
 import random
+from copy import deepcopy
 from functools import cmp_to_key
 from model import GameState, PlayerState
+
+
+# ************************** copy from class myPlayer *************************************************************************************
+def getNextState(game_state, action, id) -> GameState:
+    """give a state and action, return the next state"""
+    next_state: GameState = deepcopy(game_state)
+    next_state.ExecuteMove(id, action)
+    return next_state
 
 
 # def get_opponent_player_state(game_state: GameState, my_player_id: int) -> PlayerState:

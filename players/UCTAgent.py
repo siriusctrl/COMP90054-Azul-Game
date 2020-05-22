@@ -4,15 +4,13 @@ Student id:  904904
 Description: monte carlo tree search agent
              modify from https://www.moderndescartes.com/essays/deep_dive_mcts/
 """
-from copy import deepcopy
-from functools import reduce
 
 from advance_model import *
 import json
 from math import sqrt, log
 
-from players.environment import OpponentNode, OpponentPolicy
-from players.util import get_opponent_player_id
+from players.environment import OpponentNode, OpponentPolicy, simulation, score_reward, random_simulation_policy
+from players.util import get_opponent_player_id, getNextState
 
 N_ITER = "n_iter"
 CP = "Cp"
@@ -110,12 +108,16 @@ class UCTNode:
 
     def add_child(self, action):
         if action not in self.children:
-            opponent_node = OpponentNode(self.getNextState(self.game_state, action, self.player_id), self.policy, self.player_id, self.opponent_id)
+            opponent_node = OpponentNode(opponent_game_state=getNextState(self.game_state, action, self.player_id),
+                                         policy=self.policy,
+                                         my_player_id=self.player_id,
+                                         opponent_player_id=self.opponent_id)
             self.opponent_nodes[action] = opponent_node
             self.children[action] = []
             for opponent_action in opponent_node.actions:
                 s = opponent_node.get_next_state_by_action(opponent_action)
-                uct_node = UCTNode(s, self.player_id, self.opponent_id, self.policy, action, self)
+                uct_node = UCTNode(game_state=s, player_id=self.player_id, opponent_id=self.opponent_id, policy=self.policy,
+                                   parent_opponent_action=opponent_action, parent_move=action, parent=self)
 
                 self.children[action].append(uct_node)
                 opponent_node.set_children_uct_node_by_opponent_action(opponent_action, uct_node)
@@ -133,7 +135,7 @@ class UCTNode:
         #  keep rank and lower score gives +0.5, etc)
         #  2. or simulate for N moves and if reach scoring phase before N moves then use the reward above otherwise use a reward for pattern line (....)
         #  3. how to deal with opponent's action? assume opponent choose the greedy action?
-        return 0
+        return simulation(self.game_state, self.player_id, self.opponent_id, random_simulation_policy, score_reward)
 
     # ************************** step 4: back-propagation *************************************************************************************
     def back_propagate(self, simulated_reward):
@@ -142,13 +144,6 @@ class UCTNode:
             current.number_visits += 1
             current.total_value += simulated_reward
             current = current.parent
-
-    # ************************** copy from class myPlayer *************************************************************************************
-    def getNextState(self, game_state, action, id) -> GameState:
-        """give a state and action, return the next state"""
-        next_state: GameState = deepcopy(game_state)
-        next_state.ExecuteMove(id, action)
-        return next_state
 
 
 class UCTAgent(AdvancePlayer):
@@ -186,8 +181,14 @@ class UCTAgent(AdvancePlayer):
         :param game_state: current game state
         :return:
         """
-        root = UCTNode(game_state=game_state, player_id=self.id, opponent_id=self.opponent_id, policy=self.policy)
-        for _ in range(self.n_iter):
+        start = time.time()
+        root = UCTNode(game_state=game_state, player_id=self.id, opponent_id=self.opponent_id, policy=self.policy,
+                       parent_opponent_action=None, parent_move=None, parent=None)
+        while True:
+            elapsed = (time.time() - start)
+            if elapsed >= 0.8:  # prevent 1 second timeout
+                break
+
             leaf = root.select_leaf(self)
             leaf.expand()
             simulated_reward = leaf.simulate()

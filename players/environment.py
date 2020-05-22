@@ -4,8 +4,10 @@ Student id:  904904
 Date:        2020-5-22 01:32:19
 Description: environment for azul
 """
+import random
+
 from model import GameState, Move, TileGrab, PlayerState
-from players.util import Counter, sample
+from players.util import Counter, sample, getNextState
 
 
 class OpponentPolicy:
@@ -95,5 +97,34 @@ class OpponentNode:
         self.children_uct_node[opponent_action] = uct_node
 
 
-def simulation(game_state: GameState, player_id: int):
-    return
+def simulation(game_state: GameState, player_id: int, opponent_id: int, simulation_policy, reward_function) -> float:
+    cur_player_id = player_id
+    next_player_id = opponent_id
+    actions = game_state.players[cur_player_id].GetAvailableMoves(game_state)
+    next_state = game_state
+
+    # simulate until a turn end
+    while actions:
+        chosen_action = simulation_policy(next_state, actions, cur_player_id, next_player_id)
+
+        next_state = getNextState(next_state, chosen_action, cur_player_id)
+        cur_player_id, next_player_id = next_player_id = cur_player_id
+        actions = next_state.players[cur_player_id].GetAvailableMoves(next_state)
+
+    return reward_function(next_state, player_id, opponent_id)
+
+
+def random_simulation_policy(game_state: GameState, actions: [(Move, int, TileGrab)], cur_player_id: int, next_player_id: int):
+    return random.choice(actions)
+
+
+def score_reward(game_state: GameState, player_id: int, opponent_id: int) -> float:
+    player_score = game_state.players[player_id].score
+    opponent_score = game_state.players[opponent_id].score
+
+    if player_score > opponent_score:
+        return 1
+    elif player_score == opponent_score:
+        return 0.2
+    else:
+        return -1
