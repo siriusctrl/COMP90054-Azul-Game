@@ -1,7 +1,4 @@
 import sys
-
-from model import TileDisplay
-
 sys.path.append("players/StaffTeamEasy")
 
 from advance_model import *

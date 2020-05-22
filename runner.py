@@ -24,8 +24,8 @@ def loadAgent(file_list,name_list,superQuiet = True):
             # students need to name their player as follows
             player_temp = mymodule.myPlayer(i)
         except (NameError, ImportError):
-            print('Error: The team "' + player_file_path + '" could not be loaded! ', file=sys.stderr)
-            traceback.print_exc()
+            # print('Error: The team "' + player_file_path + '" could not be loaded! ', file=sys.stderr)
+            # traceback.print_exc()
             pass
 
         except IOError:
