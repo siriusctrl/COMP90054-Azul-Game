@@ -339,7 +339,7 @@ class TextGameDisplayer(GameDisplayer):
         print ("--------------------------------------------------------------------")
         
     def TimeOutWarning(self,runner,id):
-        print ( "Player {} Time Out, {} out of {}.".format(id,runner.warnings[i],runner.warning_limit))
+        print ( "Player {} Time Out, {} out of {}.".format(id,runner.warnings[id],runner.warning_limit))
     
     def EndRound(self,state):
         print("ROUND HAS ENDED")
