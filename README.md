@@ -85,3 +85,7 @@ Use replay file to unfold a replay
 *GUIGameDisplayer*
 
 GUI game displayer, you coud click items in the list box and use arrow keys to select move.
+
+# game replay
+- python runner.py --replay=competitions/28-May-2020-17-00-03/results/replay-staff_team_top-vs-Amazing_Azul-28-May-2020-07-03-49-287908.replay --delay=1
+
