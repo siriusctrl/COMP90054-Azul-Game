@@ -27,7 +27,7 @@ class myPlayer(AdvancePlayer):
         # learning rate for the Q value
         self.alpha = 0.2
         # exploration and exploitation rule for epsilon greedy
-        self.epsilon = 0.8
+        self.epsilon = 1
         self.other_available = None
 
     # Each player is given 5 seconds when a new round started
