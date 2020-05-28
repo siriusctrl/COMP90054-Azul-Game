@@ -60,7 +60,6 @@ class myPlayer(AdvancePlayer):
                 curr_max = key
                 maxQ = move_collection[key]
 
-        # use epsilon greedy for now
         # print(maxQ)
         # if self.flipCoin():
         #     return curr_max
