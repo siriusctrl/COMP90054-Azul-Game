@@ -62,10 +62,12 @@ class myPlayer(AdvancePlayer):
 
         # use epsilon greedy for now
         # print(maxQ)
-        if self.flipCoin():
-            return curr_max
-        else:
-            return random.choice(moves)
+        # if self.flipCoin():
+        #     return curr_max
+        # else:
+        #     return random.choice(moves)
+
+        return curr_max
 
     def getQValue(self, game_state: GameState, action) -> float:
         """get the Q value for a specify state with the performed action"""
@@ -149,4 +151,4 @@ class myPlayer(AdvancePlayer):
         return expected_score, bonus
 
     def flipCoin(self) -> bool:
-        return True if random.random() < self.discount else False
+        return True if random.random() < self.epsilon else False
