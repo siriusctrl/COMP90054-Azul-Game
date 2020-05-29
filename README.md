@@ -45,6 +45,12 @@ sudo apt-get install python3-tk
 
 # How to run it?
 
+If you are doing 2020 Semester 1 COMP90054 Azul Group Project, please follow the command in assignment specification to run your code:
+
+```
+python runner.py -r <team-name-1>.myPlayer -b <team-name-2>.myPlayer -s
+```
+
 The code example can be run with command:
 ```bash
 python runner.py
