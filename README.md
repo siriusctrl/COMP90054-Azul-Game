@@ -66,29 +66,16 @@ Other command line option can be viewed with argument: ```-h``` or ```--help```
 *   -t, --textgraphics    Display output as text only (default: False)
 *   -q, --quiet           No text nor graphics output, only show game info
 *   -Q, --superQuiet      No output at all
-*   -w WARNINGTIMELIMIT, --warningTimeLimit=WARNINGTIMELIMIT
-*                         Time limit for a warning of one move in seconds
-*                         (default: 1)
-*   --startRoundWarningTimeLimit=STARTROUNDWARNINGTIMELIMIT
-*                         Time limit for a warning of initialization for each
-*                         round in seconds (default: 5)
-*   -n NUMOFWARNINGS, --numOfWarnings=NUMOFWARNINGS
-*                         Num of warnings a team can get before fail (default:
-*                         3)
-*   -m MULTIPLEGAMES, --multipleGames=MULTIPLEGAMES
-*                         Run multiple games in a roll
-*   --setRandomSeed=SETRANDOMSEED
-*                         Set the random seed, otherwise it will be completely
-*                         random (default: 90054)
-*   -s, --saveGameRecord  Writes game histories to a file (named by teams' names
-*                         and the time they were played) (default: False)
-*   -o OUTPUT, --output=OUTPUT
-*                         output directory for replay and log (default: output)
-*   -l, --saveLog         Writes player printed information into a log
-*                         file(named by the time they were played)
+*   -w WARNINGTIMELIMIT, --warningTimeLimit=WARNINGTIMELIMIT Time limit for a warning of one move in seconds (default: 1)
+*   --startRoundWarningTimeLimit=STARTROUNDWARNINGTIMELIMIT Time limit for a warning of initialization for each round in seconds (default: 5)
+*   -n NUMOFWARNINGS, --numOfWarnings=NUMOFWARNINGS Num of warnings a team can get before fail (default: 3)
+*   -m MULTIPLEGAMES, --multipleGames=MULTIPLEGAMES Run multiple games in a roll
+*   --setRandomSeed=SETRANDOMSEED Set the random seed, otherwise it will be completely random (default: 90054)
+*   -s, --saveGameRecord  Writes game histories to a file (named by teams' names and the time they were played) (default: False)
+*   -o OUTPUT, --output=OUTPUT output directory for replay and log (default: output)
+*   -l, --saveLog         Writes player printed information into a log file(named by the time they were played)
 *   --replay=REPLAY       Replays a recorded game file by a relative path
-*   --delay=DELAY         Delay action in a play or replay by input (float)
-*                         seconds (default 0.1)
+*   --delay=DELAY         Delay action in a play or replay by input (float) seconds (default 0.1)
 
 
 
