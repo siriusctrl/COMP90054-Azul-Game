@@ -136,6 +136,9 @@ class AdvanceGameRunner:
                 try:
                     selected = func_timeout(self.time_limit,self.players[i].SelectMove,args=(moves_copy, gs_copy))
                 except AttributeError:
+                    print("AttributeError")
+                    import traceback
+                    traceback.print_exc()
                     pass    
                 # except FunctionTimedOut:
                 except:
@@ -151,7 +154,7 @@ class AdvanceGameRunner:
                     selected = random.choice(moves)
 
                     
-                    
+
                 assert(ValidMove(selected, moves))
                 random.seed(self.seed_list[self.seed_idx])
                 self.seed_idx += 1
