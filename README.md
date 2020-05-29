@@ -60,11 +60,6 @@ Other command line option can be viewed with argument: ```-h``` or ```--help```
 
 When a game ends, the GUI will pause to allow user selecting each states on listbox (right side of the window), and it will change accordingly. And replay file will be generated once the GUI window is closed.
 
-
-
-***For Debug purpose:***
-***Please use the Example.ipynb to start***
-
 **Extra function**
 - timeout limit
 - timeout warning and fail
