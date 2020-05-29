@@ -3,11 +3,17 @@
 
 from advance_model import *
 from utils import *
+# if you want to use random, you have to import it here
+import random
+
+# if you want to import other py file in the same directory as your myPlayer.py
+import sys
+sys.path.append("players/my_team_name/")
 
 class myPlayer(AdvancePlayer):
 
     # initialize
-    # The following function should not be changed at all
+    # You can add your own data initilazation here, just make sure nothing breaks
     def __init__(self,_id):
         super().__init__(_id)
 
