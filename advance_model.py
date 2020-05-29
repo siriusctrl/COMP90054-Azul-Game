@@ -136,9 +136,10 @@ class AdvanceGameRunner:
                 try:
                     selected = func_timeout(self.time_limit,self.players[i].SelectMove,args=(moves_copy, gs_copy))
                 except AttributeError:
-                    pass    
+                    pass
                 # except FunctionTimedOut:
-                except:
+                # FIXME only allow the function to catch function timeout error as otherwise too hard to debug
+                except FunctionTimedOut:
                     self.warnings[i] += 1
                     if self.displayer is not None:
                         self.displayer.TimeOutWarning(self,i)
@@ -169,7 +170,8 @@ class AdvanceGameRunner:
                 continue
             # FIXME : I added this part for better train Q learning
             else:
-                print("end of round")
+                # print("end of round")
+                pass
 
             # It is the end of round
             self.game_state.ExecuteEndOfRound()

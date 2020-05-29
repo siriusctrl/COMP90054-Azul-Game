@@ -1,4 +1,5 @@
 import sys
+
 sys.path.append("players/StaffTeamEasy")
 
 from advance_model import *
@@ -21,7 +22,7 @@ class myPlayer(AdvancePlayer):
     def __init__(self, _id):
         super().__init__(_id)
         self.id = _id
-        self.weights = {"complete": [1], "non-complete": [1]}
+        self.weights = [1, -0.4]
         # decay for Q value
         self.discount = 0.9
         # learning rate for the Q value
@@ -73,13 +74,8 @@ class myPlayer(AdvancePlayer):
         q_value = 0.0
         features = self.featureExtractor(game_state, action)
 
-        if "complete" in features:
-            key = "complete"
-        else:
-            key = "non-complete"
-
-        for i in range(len(self.weights[key])):
-            q_value += self.weights[key][i] * features[key][i]
+        for i in range(len(self.weights)):
+            q_value += self.weights[i] * features[i]
 
         return q_value
 
@@ -91,7 +87,7 @@ class myPlayer(AdvancePlayer):
         next_state = self.getNextState(game_state, action)
         reward = 0
 
-    def featureExtractor(self, game_state: GameState, move: (Move, int, TileGrab)) -> dict:
+    def featureExtractor(self, game_state: GameState, move: (Move, int, TileGrab)) -> list:
         """
         return the feature that we extract from a specific game state
         that can be used for Q value calculation
@@ -103,29 +99,18 @@ class myPlayer(AdvancePlayer):
         features = []
         next_state = self.getNextState(game_state, move)
 
-        if next_state.players[self.id].GetCompletedRows() > 0:
-            key = "complete"
-        else:
-            key = "non-complete"
-
         # expected score for the current action exec
         features.append(self.expectGain(game_state, next_state))
 
-        # max_score = 0
-        # for p in game_state.players:
-        #     if p.id != self.id:
-        #         max_score = max(p.ScoreRound()[0], max_score)
-        #
-        # # score difference at the new state - score difference at the previous state
-        # features.append((game_state.players[self.id].score - max_score) -
-        #                 (next_state.players[self.id].score - max_score))
-        #
-        # if features[0] > 0.0:
-        #     print(features)
+        # penalise add only a few grad to a long pattern
+        tile_grab: TileGrab = move[-1]
+        line_n = game_state.players[self.id].lines_number
+        # total capacity - tile already have - # we going to add
+        remains = (tile_grab.pattern_line_dest + 1) - line_n[tile_grab.pattern_line_dest] \
+                  - tile_grab.num_to_pattern_line
+        features.append(remains)
 
-        # TODO : add more features here
-
-        return {key: features}
+        return features
 
     def getNextState(self, game_state: GameState, action) -> GameState:
         """give a state and action, return the next state"""
