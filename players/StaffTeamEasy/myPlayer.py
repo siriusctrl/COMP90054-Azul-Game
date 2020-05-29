@@ -6,6 +6,8 @@ Description: monte carlo tree search agent
 """
 import itertools
 import sys
+from copy import deepcopy
+
 sys.path.append("players/StaffTeamEasy")
 import os
 
@@ -38,7 +40,7 @@ class UCTNode:
         self.actions = moves
         # self.action_next_state = {}  # {move: opponent's game_state}
         # self.opponent_actions = {}   # {move: [opponent move]}
-        self.children = {}           # {(move, opponent move): UCTNode}
+        # self.children = {}           # {(move, opponent move): UCTNode}
         self.action_children = {}    # {move: [UCTNode]}
         # update all nodes in children and opponent_nodes
         # for action in self.actions:
@@ -67,7 +69,7 @@ class UCTNode:
                 uct_node = UCTNode(game_state=child_game_state, player_id=self.player_id, opponent_id=self.opponent_id, policy=self.policy,
                                    parent_opponent_action=opponent_action, parent_move=action, parent=self)
 
-                self.children[(action, opponent_action)] = uct_node
+                # self.children[(action, opponent_action)] = uct_node
                 action_children.append(uct_node)
 
             self.action_children[action] = action_children
@@ -108,20 +110,17 @@ class UCTNode:
         :param agent:
         :return: best child UCTNode based on 'max(q_value) + u_value'
         """
-        # print("@@@@@@@", "best_child")
         cur_min = -float("inf")
         result = None
-        for child in self.children.values():
-            # print("!!!", child, child.total_value, child.number_visits, child.parent.number_visits)
-            # print("!!!", child.total_value / (1 + child.number_visits))
-            # print("!!!", 2 * agent.cp * sqrt(2 * log(self.number_visits+1) / (1 + child.number_visits)))
-            # +1 for log to prevent log(0) error
-            child_value = child.total_value / (1 + child.number_visits) + 2 * agent.cp * sqrt(2 * log(self.number_visits+1) / (1 + child.number_visits))
-            # print("!!!", child_value, cur_min, child_value > cur_min)
-            if child_value > cur_min:
-                result, cur_min = child, child_value
-        # result = max(list(itertools.chain(*self.children.values())), key=lambda node: node.q_value() + node.u_value(agent))
-        # print(result)
+        # for child in self.children.values():
+        #     child_value = child.total_value / (1 + child.number_visits) + 2 * agent.cp * sqrt(2 * log(self.number_visits+1) / (1 + child.number_visits))
+        #     if child_value > cur_min:
+        #         result, cur_min = child, child_value
+        for child in self.action_children.values():
+            for c in child:
+                child_value = c.total_value / (1 + c.number_visits) + 2 * agent.cp * sqrt(2 * log(self.number_visits+1) / (1 + c.number_visits))
+                if child_value > cur_min:
+                    result, cur_min = c, child_value
         return result
 
     def select_leaf(self, agent):
@@ -130,13 +129,7 @@ class UCTNode:
         :return:
         """
         current = self
-
-        # while current.is_expanded:
-        # print("########")
         current = current.best_child(agent)
-        # print("########", current)
-        # if not current:
-        #     return None
         return current
 
     # ************************** step 2: expansion *************************************************************************************
@@ -200,22 +193,19 @@ class myPlayer(AdvancePlayer):
         self.cp = 0.7071
         self.n_depth = 1
         self.gamma = 0.9
-        # with open('mcts.json') as file:
-        #     data = json.load(file)
-        #     self.n_iter = data[N_ITER]
-        #     self.cp = data[CP]
-        #     self.n_depth = data[N_DEPTH]
-        #     self.gamma = data[GAMMA]
+
         self.opponent_id = None
         self.policy = OpponentPolicy()
-        print("myPlayer __init__ finish")
+
+        self.greedyAgent = GreedyAgent(self.id)
+        # print("myPlayer __init__ finish")
 
     # Each player is given 5 seconds when a new round started
     # If exceeds 5 seconds, all your code will be terminated and
     # you will receive a timeout warning
     def StartRound(self, game_state: GameState):
         self.opponent_id = get_opponent_player_id(game_state, self.id)
-        print("myPlayer StartRound finish")
+        # print("myPlayer StartRound finish")
         return None
 
     # Each player is given 1 second to select next best move
@@ -232,10 +222,11 @@ class myPlayer(AdvancePlayer):
         timeout = 1
         branching_factor = len(moves)
 
-        BRANCHING_FACTOR_THRESHOLD = 15
+        BRANCHING_FACTOR_THRESHOLD = 10
 
         if branching_factor > BRANCHING_FACTOR_THRESHOLD:
-            return random.choice(moves)
+            return self.greedyAgent.SelectMove(moves, game_state)
+            # return random.choice(moves)
 
         root = UCTNode(game_state=game_state, player_id=self.id, opponent_id=self.opponent_id, policy=self.policy,
                        parent_opponent_action=None, parent_move=None, parent=None, moves=moves)
@@ -246,13 +237,13 @@ class myPlayer(AdvancePlayer):
 
         elapsed = (time.time() - start)
         timeout_threshold = timeout - 0.2 - elapsed
-        print("timeout_threshold:", timeout_threshold, "branching factor: ", branching_factor)
+        # print("timeout_threshold:", timeout_threshold, "branching factor: ", branching_factor)
 
         while True:
-            print("    ", "myPlayer iter =", counter)
+            # print("    ", "myPlayer iter =", counter)
             elapsed = (time.time() - start)
             if elapsed >= timeout_threshold:  # prevent 1 second timeout
-                print("timeout")
+                # print("timeout")
                 break
 
             leaf = root.select_leaf(self)
@@ -260,9 +251,9 @@ class myPlayer(AdvancePlayer):
                 return random.choice(moves)
             elapsed = (time.time() - start)
             if elapsed >= timeout_threshold:  # prevent 1 second timeout
-                print("timeout")
+                # print("timeout")
                 break
-            print("    ", "    select finished, used:", elapsed)
+            # print("    ", "    select finished, used:", elapsed)
 
             # leaf.expand()
             # elapsed = (time.time() - start)
@@ -274,35 +265,170 @@ class myPlayer(AdvancePlayer):
             simulated_reward = leaf.simulate()
             elapsed = (time.time() - start)
             if elapsed >= timeout_threshold:  # prevent 1 second timeout
-                print("timeout")
+                # print("timeout")
                 break
-            print("    ","    simulation finished", simulated_reward, ", used:", elapsed)
+            # print("    ","    simulation finished", simulated_reward, ", used:", elapsed)
 
             leaf.back_propagate(simulated_reward)
             elapsed = (time.time() - start)
             if elapsed >= timeout_threshold:  # prevent 1 second timeout
-                print("timeout")
+                # print("timeout")
                 break
-            print("    ", "    back propagate finished, used:", elapsed)
+            # print("    ", "    back propagate finished, used:", elapsed)
 
             counter += 1
-        print("##########", counter, "##########")
-        # print(list(root.children.items()))
+        # print("##########", counter, "##########")
         cur_min = -float("inf")
         next_action = None
-        # print(len(root.children))
         for action, child in root.action_children.items():
             child_value = 0  # sum(child, lambda x: x.total_value)
             for c in child:
                 if c.number_visits > 0:
                     child_value += c.total_value / c.number_visits
 
-            # print(cur_min, next_action, action, child_value, child)
             if child_value > cur_min:
                 cur_min, next_action = child_value, action
 
-        # next_action = max(list(itertools.chain(*root.children.items())), key=lambda item: item[1].total_value)
-        print(next_action)
+        # print(next_action, cur_min)
         elapsed = (time.time() - start)
-        print("##########", counter, "##########", "total used: ", elapsed)
+        # print("##########", counter, "##########", "total used: ", elapsed, "branching_factor: ", branching_factor)
         return next_action
+
+
+class GreedyAgent(AdvancePlayer):
+    # initialize
+    # The following function should not be changed at all
+    def __init__(self, _id):
+        super().__init__(_id)
+        self.id = _id
+        self.weights = {"complete": [1], "non-complete": [1]}
+        # decay for Q value
+        self.discount = 0.9
+        # learning rate for the Q value
+        self.alpha = 0.2
+        # exploration and exploitation rule for epsilon greedy
+        self.epsilon = 1
+        self.other_available = None
+
+    # Each player is given 5 seconds when a new round started
+    # If exceeds 5 seconds, all your code will be terminated and
+    # you will receive a timeout warning
+    def StartRound(self, game_state: GameState):
+        return None
+
+    # Each player is given 1 second to select next best move
+    # If exceeds 5 seconds, all your code will be terminated,
+    # a random action will be selected, and you will receive
+    # a timeout warning
+    def SelectMove(self, moves: [(Move, int, TileGrab)], game_state: GameState):
+        # move[1] is factory ID that illustrate the source of tile, -1 for center
+        move_collection = dict()
+
+        # # FIXME this will timeout, think another way to consider opponent action
+        # for p in game_state.players:
+        #     if p.id != self.id:
+        #         self.other_available = p.GetAvailableMoves()
+
+        for m in moves:
+            move_collection[m] = self.getQValue(game_state, m)
+
+        # find the action with highest Q value
+        maxQ = float("-inf")
+        curr_max = None
+        for key in move_collection.keys():
+            if move_collection[key] > maxQ:
+                curr_max = key
+                maxQ = move_collection[key]
+
+        # print(maxQ)
+        # if self.flipCoin():
+        #     return curr_max
+        # else:
+        #     return random.choice(moves)
+
+        return curr_max
+
+    def getQValue(self, game_state: GameState, action) -> float:
+        """get the Q value for a specify state with the performed action"""
+        q_value = 0.0
+        features = self.featureExtractor(game_state, action)
+
+        if "complete" in features:
+            key = "complete"
+        else:
+            key = "non-complete"
+
+        for i in range(len(self.weights[key])):
+            q_value += self.weights[key][i] * features[key][i]
+
+        return q_value
+
+    def update(self, game_state: GameState, action) -> None:
+        """
+            update weight, this will be called at the beginning of each state to
+            update the parameters for previous state and action
+        """
+        next_state = self.getNextState(game_state, action)
+        reward = 0
+
+    def featureExtractor(self, game_state: GameState, move: (Move, int, TileGrab)) -> dict:
+        """
+        return the feature that we extract from a specific game state
+        that can be used for Q value calculation
+
+        feature = [expected score, bonus at end]
+
+        :return a dictionary that contains the value we want to use in this game
+        """
+        features = []
+        next_state = self.getNextState(game_state, move)
+
+        if next_state.players[self.id].GetCompletedRows() > 0:
+            key = "complete"
+        else:
+            key = "non-complete"
+
+        # expected score for the current action exec
+        features.append(self.expectGain(game_state, next_state))
+
+        # max_score = 0
+        # for p in game_state.players:
+        #     if p.id != self.id:
+        #         max_score = max(p.ScoreRound()[0], max_score)
+        #
+        # # score difference at the new state - score difference at the previous state
+        # features.append((game_state.players[self.id].score - max_score) -
+        #                 (next_state.players[self.id].score - max_score))
+        #
+        # if features[0] > 0.0:
+        #     print(features)
+
+        # TODO : add more features here
+
+        return {key: features}
+
+    def getNextState(self, game_state: GameState, action) -> GameState:
+        """give a state and action, return the next state"""
+        next_state: GameState = deepcopy(game_state)
+        next_state.ExecuteMove(self.id, action)
+        return next_state
+
+    def expectGain(self, curr_state, next_state):
+        curr_expected_score, curr_bonus = self.expectScore(curr_state)
+        next_expected_score, next_bonus = self.expectScore(next_state)
+
+        return next_expected_score + next_bonus - curr_expected_score - curr_bonus
+
+    def expectScore(self, state: GameState):
+        """
+            calculate the expected reward for a state, including the end of game score
+            :param state should be deep copied state and applied the selected action
+        """
+        my_state: PlayerState = state.players[self.id]
+        expected_score, _ = my_state.ScoreRound()
+        bonus = my_state.EndOfGameScore()
+        return expected_score, bonus
+
+    def flipCoin(self) -> bool:
+        return True if random.random() < self.epsilon else False
+
