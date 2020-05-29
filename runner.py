@@ -163,14 +163,18 @@ def run(options,valid_game,msg):
                 _,_,r_total,b_total,r_win,b_win,tie = games_results[len(games_results)-1]
                 r_score = replay[0][0]
                 b_score = replay[1][0]
-                r_total = r_total+r_score
-                b_total = b_total+b_score
                 if r_score==b_score:
                     tie =  tie + 1
                 elif r_score<b_score:
                     b_win = b_win + 1
                 else:
                     r_win = r_win + 1
+
+                # adding this to avoid -1 in the score
+                r_score = max(r_score,0)
+                b_score = max(b_score,0)
+                r_total = r_total+r_score
+                b_total = b_total+b_score
                 if not options.superQuiet:
                     print("Result of game ({}/{}): Player {} earned {} points; Player {} earned {} points\n".format(i+1,options.multipleGames,players_names[0],r_score,players_names[1],b_score))
                 games_results.append((r_score,b_score,r_total,b_total,r_win,b_win,tie))
