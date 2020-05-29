@@ -140,8 +140,8 @@ class AdvanceGameRunner:
                     import traceback
                     traceback.print_exc()
                     pass    
-                # except FunctionTimedOut:
-                except:
+                except FunctionTimedOut:
+                # except:
                     self.warnings[i] += 1
                     if self.displayer is not None:
                         self.displayer.TimeOutWarning(self,i)

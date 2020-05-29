@@ -24,7 +24,7 @@ GAMMA = "gamma"
 
 class UCTNode:
     def __init__(self, game_state: GameState, player_id, opponent_id, policy: OpponentPolicy,
-                 parent_opponent_action: [(Move, int, TileGrab)], parent_move=None, parent=None, prior=0):
+                 parent_opponent_action: [(Move, int, TileGrab)], parent_move=None, parent=None, prior=0, moves=None):
         self.player_id = player_id
         self.opponent_id = opponent_id
         self.policy = policy
@@ -35,9 +35,11 @@ class UCTNode:
         self.parent_move = parent_move
         self.parent_opponent_action = parent_opponent_action
 
-        self.actions = None
-        self.opponent_nodes = {}  # {move: OpponentNode}
-        self.children = {}  # {move: UCTNode}
+        self.actions = moves
+        # self.action_next_state = {}  # {move: opponent's game_state}
+        # self.opponent_actions = {}   # {move: [opponent move]}
+        self.children = {}           # {(move, opponent move): UCTNode}
+        self.action_children = {}    # {move: [UCTNode]}
         # update all nodes in children and opponent_nodes
         # for action in self.actions:
         #     opponent_node = OpponentNode(self.getNextState(self.game_state, action, self.player_id), self.policy, self.player_id, self.opponent_id)
@@ -51,6 +53,25 @@ class UCTNode:
         # used mcts with bellman equation back propagation
         self.vs = 0
 
+    def initialize(self):
+        for action in self.get_actions():
+            opponent_state = getNextState(self.game_state, action, self.player_id)
+            # self.action_next_state[action] = opponent_state
+
+            opponent_actions = opponent_state.players[self.opponent_id].GetAvailableMoves(opponent_state)
+            # self.opponent_actions[action] = opponent_actions
+
+            action_children = []
+            for opponent_action in opponent_actions:
+                child_game_state = getNextState(opponent_state, opponent_action, self.opponent_id)
+                uct_node = UCTNode(game_state=child_game_state, player_id=self.player_id, opponent_id=self.opponent_id, policy=self.policy,
+                                   parent_opponent_action=opponent_action, parent_move=action, parent=self)
+
+                self.children[(action, opponent_action)] = uct_node
+                action_children.append(uct_node)
+
+            self.action_children[action] = action_children
+
     def get_actions(self):
         """
         lazy evaluation
@@ -58,14 +79,6 @@ class UCTNode:
         if not self.actions:
             self.actions = self.game_state.players[self.player_id].GetAvailableMoves(self.game_state)
         return self.actions
-
-    # def get_children_by_action(self, action) -> [GameState]:
-    #     return self.opponent_nodes[action].get_next_states()
-    #
-    # def get_all_children(self) -> [GameState]:
-    #     for action in self.actions:
-    #         if action not in self.opponent_nodes:
-    #             self.opponent_nodes[action] = OpponentNode(self.getNextState(self.game_state))
 
     # ************************** step 1: selection *************************************************************************************
 
@@ -98,15 +111,15 @@ class UCTNode:
         # print("@@@@@@@", "best_child")
         cur_min = -float("inf")
         result = None
-        for children in self.children.values():
-            for child in children:
-                # print("!!!", child, child.total_value, child.number_visits, child.parent.number_visits)
-                # print("!!!", child.total_value / (1 + child.number_visits))
-                # print("!!!", 2 * agent.cp * sqrt(2 * log(self.number_visits) / (1 + child.number_visits)))
-                child_value = child.total_value / (1 + child.number_visits) + 2 * agent.cp * sqrt(2 * log(self.number_visits) / (1 + child.number_visits))
-                # print("!!!", child_value, cur_min, child_value > cur_min)
-                if child_value > cur_min:
-                    result, cur_min = child, child_value
+        for child in self.children.values():
+            # print("!!!", child, child.total_value, child.number_visits, child.parent.number_visits)
+            # print("!!!", child.total_value / (1 + child.number_visits))
+            # print("!!!", 2 * agent.cp * sqrt(2 * log(self.number_visits+1) / (1 + child.number_visits)))
+            # +1 for log to prevent log(0) error
+            child_value = child.total_value / (1 + child.number_visits) + 2 * agent.cp * sqrt(2 * log(self.number_visits+1) / (1 + child.number_visits))
+            # print("!!!", child_value, cur_min, child_value > cur_min)
+            if child_value > cur_min:
+                result, cur_min = child, child_value
         # result = max(list(itertools.chain(*self.children.values())), key=lambda node: node.q_value() + node.u_value(agent))
         # print(result)
         return result
@@ -118,52 +131,38 @@ class UCTNode:
         """
         current = self
 
-        while current.is_expanded:
-            # print("########")
-            current = current.best_child(agent)
-            # print("########", current)
-            if not current:
-                return None
+        # while current.is_expanded:
+        # print("########")
+        current = current.best_child(agent)
+        # print("########", current)
+        # if not current:
+        #     return None
         return current
-
-    def bellman_equation(self, action, agent):
-        """
-        tmp method here in case that we want to switch to bellman_equation update in back propagation
-        :param action:
-        :param agent:
-        :return:
-        """
-        result = 0
-        opponent_node: OpponentNode = self.opponent_nodes[action]
-        for opponent_action in opponent_node.actions:
-            # r(s, action, s': uct child) = 0 here
-            result += opponent_node.get_prob_by_action(opponent_action) * (0 + agent.gamma * opponent_node.children_uct_node[opponent_action].vs)
-        return result
 
     # ************************** step 2: expansion *************************************************************************************
 
-    def expand(self):
-        self.is_expanded = True
-        for action in self.get_actions():
-            self.add_child(action)
-
-    def add_child(self, action):
-        if action not in self.children:
-            # print("    |", action)
-            opponent_node = OpponentNode(opponent_game_state=getNextState(self.game_state, action, self.player_id),
-                                         policy=self.policy,
-                                         my_player_id=self.player_id,
-                                         opponent_player_id=self.opponent_id)
-            self.opponent_nodes[action] = opponent_node
-            self.children[action] = []
-            for opponent_action in opponent_node.actions:
-                # print("        |", opponent_action)
-                s = opponent_node.get_next_state_by_action(opponent_action)
-                uct_node = UCTNode(game_state=s, player_id=self.player_id, opponent_id=self.opponent_id, policy=self.policy,
-                                   parent_opponent_action=opponent_action, parent_move=action, parent=self)
-
-                self.children[action].append(uct_node)
-                opponent_node.set_children_uct_node_by_opponent_action(opponent_action, uct_node)
+    # def expand(self):
+    #     self.is_expanded = True
+    #     for action in self.get_actions():
+    #         self.add_child(action)
+    #
+    # def add_child(self, action):
+    #     if action not in self.children:
+    #         # print("    |", action)
+    #         opponent_node = OpponentNode(opponent_game_state=getNextState(self.game_state, action, self.player_id),
+    #                                      policy=self.policy,
+    #                                      my_player_id=self.player_id,
+    #                                      opponent_player_id=self.opponent_id)
+    #         self.opponent_nodes[action] = opponent_node
+    #         self.children[action] = []
+    #         for opponent_action in opponent_node.actions:
+    #             # print("        |", opponent_action)
+    #             s = opponent_node.get_next_state_by_action(opponent_action)
+    #             uct_node = UCTNode(game_state=s, player_id=self.player_id, opponent_id=self.opponent_id, policy=self.policy,
+    #                                parent_opponent_action=opponent_action, parent_move=action, parent=self)
+    #
+    #             self.children[action].append(uct_node)
+    #             opponent_node.set_children_uct_node_by_opponent_action(opponent_action, uct_node)
 
     # def add_opponent_node(self, action, next_state):
     #     self.opponent_nodes[action] = OpponentNode(next_state, self.policy, self.id, self.opponent_id)
@@ -229,15 +228,28 @@ class myPlayer(AdvancePlayer):
         :param game_state: current game state
         :return:
         """
-        timeout = 10
-        timeout_threshold = timeout - 0.2
         start = time.time()
+        timeout = 1
+        branching_factor = len(moves)
+
+        BRANCHING_FACTOR_THRESHOLD = 15
+
+        if branching_factor > BRANCHING_FACTOR_THRESHOLD:
+            return random.choice(moves)
+
         root = UCTNode(game_state=game_state, player_id=self.id, opponent_id=self.opponent_id, policy=self.policy,
-                       parent_opponent_action=None, parent_move=None, parent=None)
+                       parent_opponent_action=None, parent_move=None, parent=None, moves=moves)
+        root.initialize()
+
         counter = 0
-        N_ITER = 3
-        while counter < N_ITER:
-            print("myPlayer iter =", counter)
+        N_ITER = 200
+
+        elapsed = (time.time() - start)
+        timeout_threshold = timeout - 0.2 - elapsed
+        print("timeout_threshold:", timeout_threshold, "branching factor: ", branching_factor)
+
+        while True:
+            print("    ", "myPlayer iter =", counter)
             elapsed = (time.time() - start)
             if elapsed >= timeout_threshold:  # prevent 1 second timeout
                 print("timeout")
@@ -250,39 +262,40 @@ class myPlayer(AdvancePlayer):
             if elapsed >= timeout_threshold:  # prevent 1 second timeout
                 print("timeout")
                 break
-            print("    select finished, used:", elapsed)
+            print("    ", "    select finished, used:", elapsed)
 
-            leaf.expand()
-            elapsed = (time.time() - start)
-            if elapsed >= timeout_threshold:  # prevent 1 second timeout
-                print("timeout")
-                break
-            print("    expand finished, used:", elapsed)
+            # leaf.expand()
+            # elapsed = (time.time() - start)
+            # if elapsed >= timeout_threshold:  # prevent 1 second timeout
+            #     print("timeout")
+            #     break
+            # print("    expand finished, used:", elapsed)
 
             simulated_reward = leaf.simulate()
             elapsed = (time.time() - start)
             if elapsed >= timeout_threshold:  # prevent 1 second timeout
                 print("timeout")
                 break
-            print("    simulation finished", simulated_reward, ", used:", elapsed)
+            print("    ","    simulation finished", simulated_reward, ", used:", elapsed)
 
             leaf.back_propagate(simulated_reward)
             elapsed = (time.time() - start)
             if elapsed >= timeout_threshold:  # prevent 1 second timeout
                 print("timeout")
                 break
-            print("    back propagate finished, used:", elapsed)
+            print("    ", "    back propagate finished, used:", elapsed)
 
             counter += 1
-        print("##########")
+        print("##########", counter, "##########")
         # print(list(root.children.items()))
         cur_min = -float("inf")
         next_action = None
         # print(len(root.children))
-        for action, child in root.children.items():
+        for action, child in root.action_children.items():
             child_value = 0  # sum(child, lambda x: x.total_value)
             for c in child:
-                child_value += c.total_value
+                if c.number_visits > 0:
+                    child_value += c.total_value / c.number_visits
 
             # print(cur_min, next_action, action, child_value, child)
             if child_value > cur_min:
@@ -290,5 +303,6 @@ class myPlayer(AdvancePlayer):
 
         # next_action = max(list(itertools.chain(*root.children.items())), key=lambda item: item[1].total_value)
         print(next_action)
-        print("##########")
+        elapsed = (time.time() - start)
+        print("##########", counter, "##########", "total used: ", elapsed)
         return next_action
