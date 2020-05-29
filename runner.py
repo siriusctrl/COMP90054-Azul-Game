@@ -248,7 +248,7 @@ def loadParameter():
     parser.add_option('-l','--saveLog', action='store_true',help='Writes player printed information into a log file(named by the time they were played)', default=False)
     parser.add_option('--replay', default=None, help='Replays a recorded game file by a relative path')
     parser.add_option('--delay', type='float', help='Delay action in a play or replay by input (float) seconds (default 0.1)', default=0.1)
-    parser.add_option('-p','--print', action='store_true', help='Print all the output in terminal when playing games, will diable \'-l\' automatically. (default: False)', default=False)
+    parser.add_option('-p','--print', action='store_true', help='Print all the output in terminal when playing games, will disable \'-l\' automatically. (default: False)', default=False)
 
     options, otherjunk = parser.parse_args(sys.argv[1:] )
     assert len(otherjunk) == 0, "Unrecognized options: " + str(otherjunk)
