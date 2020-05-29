@@ -7,7 +7,7 @@ Description: environment for azul
 import random
 
 from model import GameState, Move, TileGrab, PlayerState
-from players.StaffTeamEasy.util import Counter, sample, getNextState
+from players.StaffTeamEasy.util import Counter, sample, getNextState, expectScore
 
 
 class OpponentPolicy:
@@ -58,6 +58,8 @@ class OpponentNode:
 
         self.opponent_player_state: PlayerState = opponent_game_state.players[opponent_player_id]
 
+        self.opponent_player_id = opponent_player_id
+
         # opponent player's actions in its game state
         self.actions = self.opponent_player_state.GetAvailableMoves(self.opponent_game_state)
         # util.Counter({action: prob -> float})
@@ -74,7 +76,7 @@ class OpponentNode:
         :return:
         """
         if not self.action_next_state[opponent_action]:
-            self.action_next_state[opponent_action] = self.opponent_player_state.GetAvailableMoves(self.opponent_game_state)
+            self.action_next_state[opponent_action] = getNextState(self.opponent_game_state, opponent_action, self.opponent_player_id)
         return self.action_next_state[opponent_action]
 
     def sample_an_action(self):
@@ -106,9 +108,11 @@ def simulation(game_state: GameState, player_id: int, opponent_id: int, simulati
     # simulate until a turn end
     while actions:
         chosen_action = simulation_policy(next_state, actions, cur_player_id, next_player_id)
+        # print(cur_player_id, chosen_action)
 
         next_state = getNextState(next_state, chosen_action, cur_player_id)
-        cur_player_id, next_player_id = next_player_id = cur_player_id
+        # print("next_state generated")
+        cur_player_id, next_player_id = next_player_id, cur_player_id
         actions = next_state.players[cur_player_id].GetAvailableMoves(next_state)
 
     return reward_function(next_state, player_id, opponent_id)
@@ -119,8 +123,10 @@ def random_simulation_policy(game_state: GameState, actions: [(Move, int, TileGr
 
 
 def score_reward(game_state: GameState, player_id: int, opponent_id: int) -> float:
-    player_score = game_state.players[player_id].score
-    opponent_score = game_state.players[opponent_id].score
+    # player_score = game_state.players[player_id].score
+    player_score = expectScore(game_state, player_id)
+    # opponent_score = game_state.players[opponent_id].score
+    opponent_score = expectScore(game_state, opponent_id)
 
     if player_score > opponent_score:
         return 1

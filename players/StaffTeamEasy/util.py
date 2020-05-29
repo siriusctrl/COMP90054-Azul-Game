@@ -18,6 +18,17 @@ def getNextState(game_state, action, id) -> GameState:
     return next_state
 
 
+def expectScore(state: GameState, player_id: int):
+    """
+        calculate the expected reward for a state, including the end of game score
+        :param state should be deep copied state and applied the selected action
+    """
+    my_state: PlayerState = state.players[player_id]
+    expected_score, _ = my_state.ScoreRound()
+    bonus = my_state.EndOfGameScore()
+    return expected_score, bonus
+
+
 # def get_opponent_player_state(game_state: GameState, my_player_id: int) -> PlayerState:
 #     """
 #     given self player's id return first opponent's GameState object
