@@ -106,7 +106,6 @@ class myPlayer(AdvancePlayer):
         tile_grab: TileGrab = move[-1]
         line_n = game_state.players[self.id].lines_number
         # total capacity - tile already have - # we going to add
-        # TODO correct the penalty based on the current floor
         remains = (tile_grab.pattern_line_dest + 1) - line_n[tile_grab.pattern_line_dest] \
                   - tile_grab.num_to_pattern_line
         features.append(remains)
