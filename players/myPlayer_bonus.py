@@ -35,8 +35,8 @@ class myPlayer(AdvancePlayer):
         return None
 
     # Each player is given 1 second to select next best move
-    # If exceeds 5 seconds, all your code will be terminated, 
-    # a random action will be selected, and you will receive 
+    # If exceeds 5 seconds, all your code will be terminated,
+    # a random action will be selected, and you will receive
     # a timeout warning
     def SelectMove(self, moves: [(Move, int, TileGrab)], game_state: GameState):
         # move[1] is factory ID that illustrate the source of tile, -1 for center

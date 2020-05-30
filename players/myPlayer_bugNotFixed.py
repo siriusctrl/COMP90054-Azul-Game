@@ -17,21 +17,24 @@ def seeTile(tile_grab: TileGrab):
 
 
 class myPlayer(AdvancePlayer):
-    IGNORE_BONUS_THRESHOLD = 3
-
     # initialize
     # The following function should not be changed at all
     def __init__(self, _id):
         super().__init__(_id)
-        self.weights = [1, -0.4, 0.015]
-        self.curr_round = -1
+        self.id = _id
+        self.weights = [1, -0.4]
+        # decay for Q value
+        self.discount = 0.9
+        # learning rate for the Q value
+        self.alpha = 0.2
+        # exploration and exploitation rule for epsilon greedy
+        self.epsilon = 1
+        self.other_available = None
 
     # Each player is given 5 seconds when a new round started
     # If exceeds 5 seconds, all your code will be terminated and
     # you will receive a timeout warning
     def StartRound(self, game_state: GameState):
-        self.curr_round += 1
-        print("---------- round", self.curr_round, "start ------------")
         return None
 
     # Each player is given 1 second to select next best move
@@ -58,11 +61,12 @@ class myPlayer(AdvancePlayer):
                 curr_max = key
                 maxQ = move_collection[key]
 
-        ns = self.getNextState(game_state, curr_max)
+        # print(maxQ)
+        # if self.flipCoin():
+        #     return curr_max
+        # else:
+        #     return random.choice(moves)
 
-        print("   ", self.id, ":", self.featureExtractor(game_state, curr_max))
-        print("   ", "this:", self.expectScore(game_state), " that:", self.expectScore(ns))
-        print("")
         return curr_max
 
     def getQValue(self, game_state: GameState, action) -> float:
@@ -96,46 +100,15 @@ class myPlayer(AdvancePlayer):
         next_state = self.getNextState(game_state, move)
 
         # expected score for the current action exec
-        if self.curr_round < myPlayer.IGNORE_BONUS_THRESHOLD:
-            expect_gain = self.expectGain(game_state, next_state)
-
-            # TODO: examine this field
-            # suppose 90% of game end in 5 rounds
-            if move[0] == Move.TAKE_FROM_CENTRE and not game_state.first_player_taken and \
-                    self.curr_round < 4:
-                # get first player token
-                expect_gain += 1
-
-            # only ignore the positive mark
-            if expect_gain > 0:
-                expect_gain *= 0.1
-
-            features.append(expect_gain)
-        else:
-            features.append(self.expectGain(game_state, next_state))
+        features.append(self.expectGain(game_state, next_state))
 
         # penalise add only a few grad to a long pattern
         tile_grab: TileGrab = move[-1]
         line_n = game_state.players[self.id].lines_number
-
-        if tile_grab.pattern_line_dest != -1:
-            if line_n[tile_grab.pattern_line_dest] == 0:
-                # total capacity - tile already have - # we going to add
-                remains = (tile_grab.pattern_line_dest + 1) - tile_grab.num_to_pattern_line
-                features.append(remains)
-            else:
-                features.append(0)
-        else:
-            features.append(0)
-
-        # give a slightly higher point to collect more
-        features.append(move[-1].num_to_pattern_line)
-
-        # # give bonus to the line that
-        # if tile_grab.pattern_line_dest != -1:
-        #     features.append(line_n[tile_grab.pattern_line_dest])
-        # else:
-        #     features.append(0)
+        # total capacity - tile already have - # we going to add
+        remains = (tile_grab.pattern_line_dest + 1) - line_n[tile_grab.pattern_line_dest] \
+                  - tile_grab.num_to_pattern_line
+        features.append(remains)
 
         return features
 
