@@ -290,11 +290,12 @@ class myPlayer(AdvancePlayer):
             # print("    ", "    back propagate finished, used:", elapsed)
 
             counter += 1
-        print("##########", counter, "##########")
+        # print("##########", counter, "##########")
         cur_min = -float("inf")
         next_action = None
         for action, child in root.action_children.items():
             child_value = 0  # sum(child, lambda x: x.total_value)
+            # print("    ####", action)
             for c in child:
                 if c.number_visits > 0:
                     child_value += c.total_value / c.number_visits
@@ -303,9 +304,9 @@ class myPlayer(AdvancePlayer):
             if child_value > cur_min:
                 cur_min, next_action = child_value, action
 
-        print(next_action, cur_min)
+        # print(next_action, cur_min)
         elapsed = (time.time() - start)
-        print("##########", counter, "##########", "total used: ", elapsed, "branching_factor: ", branching_factor)
+        # print("##########", counter, "##########", "total used: ", elapsed, "branching_factor: ", branching_factor)
         return next_action
 
 
