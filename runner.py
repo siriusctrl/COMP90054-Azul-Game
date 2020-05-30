@@ -12,7 +12,7 @@ import random
 import players.random_player as random_player
 from optparse import OptionParser
 
-idx2rb = ["teamRed","teamBlue"]
+error_index= ["red_team_load","blue_team_load"]
 
 def loadAgent(file_list,name_list,superQuiet = True):
     players = [None] * 2
@@ -24,8 +24,8 @@ def loadAgent(file_list,name_list,superQuiet = True):
             # students need to name their player as follows
             player_temp = mymodule.myPlayer(i)
         except (NameError, ImportError):
-            # print('Error: The team "' + player_file_path + '" could not be loaded! ', file=sys.stderr)
-            # traceback.print_exc()
+            #print('Error: The team "' + player_file_path + '" could not be loaded! ', file=sys.stderr)
+            #traceback.print_exc()
             pass
 
         except IOError:
@@ -42,7 +42,7 @@ def loadAgent(file_list,name_list,superQuiet = True):
                 print ('Player {} team {} agent {} loaded'.format(i,name_list[i],file_list[i]))
         else:
             players[i] = random_player.myPlayer(i)
-            load_errs[idx2rb[i]] = '[Error] Player {} team {} agent {} cannot be loaded'.format(i,name_list[i],".".join((file_list[i]).split(".")[-2:]))
+            load_errs[error_index[i]] = '[Error] Player {} team {} agent {} cannot be loaded'.format(i,name_list[i],".".join((file_list[i]).split(".")[-2:]))
     return players, load_errs
 
 
@@ -71,7 +71,7 @@ class HidePrint:
         sys.stderr = sys.stdout
 
 
-def run(options):
+def run(options,valid_game,msg):
 
     # text displayer, will disable GUI
     displayer = GUIGameDisplayer(options.delay)
@@ -104,32 +104,34 @@ def run(options):
         if not options.superQuiet:
             print('Replaying recorded game %s.' % options.replay)
         replay_dir = options.replay
-        replay_dir = os.path.join(options.output,replay_dir)
-        if "." not in replay_dir:
-            replay_dir +=".replay"
-        if ".\\" in replay_dir:
-            replay_dir.replace(".\\","")
+        # replay_dir = os.path.join(options.output,replay_dir)
+        # if not replay_dir.endsWith(".replay"):
+        #     replay_dir +=".replay"
+        # if ".\\" in replay_dir:
+        #     replay_dir.replace(".\\","")
         replay = pickle.load(open(replay_dir,'rb'),encoding="bytes")
         ReplayRunner(replay,displayer).Run()
     else: 
         games_results = [(0,0,0,0,0,0,0)]
+        results = {"succ":valid_game}
         for i in range(options.multipleGames):
             # loading players
             players,load_errs = loadAgent([options.red,options.blue],players_names,superQuiet= options.superQuiet)
             is_load_err = False
             for i,err in load_errs.items():
+                msg += "{} {}\n".format(i,err)
                 if not options.superQuiet:
-                    print (i,err)
+                    print(i,err)
                 is_load_err = True
         
             random_seed=seed_list[seed_idx]
             seed_idx += 1
 
             if is_load_err:
-                results = {}
-                results["options"] = options
-                results["load_errs"] = load_errs
-                return results                
+                results["load_errors"] = load_errs
+                results["succ"]=False
+                valid_game = False
+                
 
             f_name = players_names[0]+'-vs-'+players_names[1]+"-"+datetime.datetime.now().strftime("%d-%b-%Y-%H-%M-%S-%f")
             
@@ -140,57 +142,77 @@ def run(options):
                             warning_limit=num_of_warning,
                             displayer=displayer,
                             players_namelist=players_names)
-            #with HidePrint(options.saveLog,file_path,f_name):
-            replay = gr.Run()
-
-            _,_,r_total,b_total,r_win,b_win,tie = games_results[len(games_results)-1]
-            r_score = replay[0][0]
-            b_score = replay[1][0]
-            r_total = r_total+r_score
-            b_total = b_total+b_score
-            if r_score==b_score:
-                tie =  tie + 1
-            elif r_score<b_score:
-                b_win = b_win + 1
+            if not options.print:
+                with HidePrint(options.saveLog,file_path,f_name):
+                    print("Following are the print info for loading:\n{}\n".format(msg))
+                    print("\n-------------------------------------\n")
+                    print("Following are the print info from the game:\n")
+                    if valid_game:          
+                        replay = gr.Run()
+                    else:
+                        print("Invalid game. No game played.\n")
             else:
-                r_win = r_win + 1
-            if not options.superQuiet:
-                print("Result of game ({}/{}): Player {} earned {} points; Player {} earned {} points\n".format(i+1,options.multipleGames,players_names[0],r_score,players_names[1],b_score))
-            games_results.append((r_score,b_score,r_total,b_total,r_win,b_win,tie))
+                print("Following are the print info for loading:\n{}\n".format(msg))
+                print("\n-------------------------------------\n")
+                print("Following are the print info from the game:\n")
+                if valid_game:          
+                    replay = gr.Run()
+                else:
+                    print("Invalid game. No game played.\n")
+            if valid_game:
+                _,_,r_total,b_total,r_win,b_win,tie = games_results[len(games_results)-1]
+                r_score = replay[0][0]
+                b_score = replay[1][0]
+                if r_score==b_score:
+                    tie =  tie + 1
+                elif r_score<b_score:
+                    b_win = b_win + 1
+                else:
+                    r_win = r_win + 1
 
-            if options.saveGameRecord:
-                # f_name = file_path+"/replay-"+players_names[0]+'-vs-'+players_names[1]+datetime.datetime.now().strftime("%d-%b-%Y-%H-%M-%S-%f")+'.replay'
-                if not os.path.exists(file_path):
-                    os.makedirs(file_path)
+                # adding this to avoid -1 in the score
+                r_score = max(r_score,0)
+                b_score = max(b_score,0)
+                r_total = r_total+r_score
+                b_total = b_total+b_score
                 if not options.superQuiet:
-                    print("Game ({}/{}) has been recorded!\n".format(i+1,options.multipleGames))
-                record = pickle.dumps(replay)
-                with open(file_path+"/replay-"+f_name+".replay",'wb') as f:
-                    f.write(record)
-        _,_,r_total,b_total,r_win,b_win,tie = games_results[len(games_results)-1]
-        r_avg = r_total/options.multipleGames
-        b_avg = b_total/options.multipleGames
-        r_win_rate = r_win / options.multipleGames *100
-        b_win_rate = b_win / options.multipleGames *100
-        if not options.superQuiet:
-            print(
-                "Over {} games: \nPlayer {} earned {:+.2f} points in average and won {} games, winning rate {:.2f}%; \nPlayer {} earned {:+.2f} points in average and won {} games, winning rate {:.2f}%; \nAnd {} games tied.".format(options.multipleGames,
-                players_names[0],r_avg,r_win,r_win_rate,players_names[1],b_avg,b_win,b_win_rate,tie))
+                    print("Result of game ({}/{}): Player {} earned {} points; Player {} earned {} points\n".format(i+1,options.multipleGames,players_names[0],r_score,players_names[1],b_score))
+                games_results.append((r_score,b_score,r_total,b_total,r_win,b_win,tie))
 
-        # return results as statistics
-        results = {}
-        results["r_avg"] = r_avg
-        results["b_avg"] = b_avg
-        results["r_win"] = r_win
-        results["b_win"] = b_win
-        results["r_win_rate"] = r_win_rate
-        results["b_win_rate"] = b_win_rate
-        results["r_name"] = players_names[0]
-        results["b_name"] = players_names[1]
-        results["fileName"] = f_name
-        results["options"] = options
-        results["load_errs"] = load_errs
-        results["tie"] = tie
+                if options.saveGameRecord:
+                    # f_name = file_path+"/replay-"+players_names[0]+'-vs-'+players_names[1]+datetime.datetime.now().strftime("%d-%b-%Y-%H-%M-%S-%f")+'.replay'
+                    if not os.path.exists(file_path):
+                        os.makedirs(file_path)
+                    if not options.superQuiet:
+                        print("Game ({}/{}) has been recorded!\n".format(i+1,options.multipleGames))
+                    record = pickle.dumps(replay)
+                    with open(file_path+"/replay-"+f_name+".replay",'wb') as f:
+                        f.write(record)
+            
+        if valid_game:
+            _,_,r_total,b_total,r_win,b_win,tie = games_results[len(games_results)-1]
+            r_avg = r_total/options.multipleGames
+            b_avg = b_total/options.multipleGames
+            r_win_rate = r_win / options.multipleGames *100
+            b_win_rate = b_win / options.multipleGames *100
+            if not options.superQuiet:
+                print(
+                    "Over {} games: \nPlayer {} earned {:+.2f} points in average and won {} games, winning rate {:.2f}%; \nPlayer {} earned {:+.2f} points in average and won {} games, winning rate {:.2f}%; \nAnd {} games tied.".format(options.multipleGames,
+                    players_names[0],r_avg,r_win,r_win_rate,players_names[1],b_avg,b_win,b_win_rate,tie))
+
+            # return results as statistics
+            results["r_total"] = r_total
+            results["b_total"] = b_total
+            results["r_win"] = r_win
+            results["b_win"] = b_win
+            results["r_win_rate"] = r_win_rate
+            results["b_win_rate"] = b_win_rate
+            results["r_name"] = players_names[0]
+            results["b_name"] = players_names[1]
+            results["fileName"] = f_name
+            results["load_errs"] = load_errs
+            results["tie"] = tie
+            results["succ"] = True
 
         return results
 
@@ -226,6 +248,7 @@ def loadParameter():
     parser.add_option('-l','--saveLog', action='store_true',help='Writes player printed information into a log file(named by the time they were played)', default=False)
     parser.add_option('--replay', default=None, help='Replays a recorded game file by a relative path')
     parser.add_option('--delay', type='float', help='Delay action in a play or replay by input (float) seconds (default 0.1)', default=0.1)
+    parser.add_option('-p','--print', action='store_true', help='Print all the output in terminal when playing games, will disable \'-l\' automatically. (default: False)', default=False)
 
     options, otherjunk = parser.parse_args(sys.argv[1:] )
     assert len(otherjunk) == 0, "Unrecognized options: " + str(otherjunk)
@@ -249,9 +272,9 @@ if __name__ == '__main__':
 
     > python runner.py --help
     """
-
+    msg = ""
     options = loadParameter()
-    run(options)
+    run(options,True,msg)
 
 
 
