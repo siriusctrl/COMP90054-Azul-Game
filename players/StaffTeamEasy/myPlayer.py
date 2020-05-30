@@ -15,7 +15,7 @@ from advance_model import *
 import json
 from math import sqrt, log
 
-from players.StaffTeamEasy.environment import OpponentNode, OpponentPolicy, simulation, score_reward, random_simulation_policy
+from players.StaffTeamEasy.environment import OpponentNode, OpponentPolicy, simulation, score_reward, random_simulation_policy, delta_score_reward
 from players.StaffTeamEasy.util import get_opponent_player_id, getNextState
 
 N_ITER = "n_iter"
@@ -118,47 +118,57 @@ class UCTNode:
         #         result, cur_min = child, child_value
         for child in self.action_children.values():
             for c in child:
+                if c.number_visits == 0:
+                    result, cur_min = c, float("inf")
+                    return result, True
                 child_value = c.total_value / (1 + c.number_visits) + 2 * agent.cp * sqrt(2 * log(self.number_visits+1) / (1 + c.number_visits))
                 if child_value > cur_min:
                     result, cur_min = c, child_value
-        return result
+
+        # no child, so return self with False
+        if not result:
+            # print("error: null child")
+            return self, False
+        else:
+            # print("success")
+            pass
+        return result, True
 
     def select_leaf(self, agent):
         """
         :param agent: UCTAgent
         :return:
         """
-        current = self
-        current = current.best_child(agent)
+        current: UCTNode = self
+        cur_depth = 0
+        has_child = True
+
+        while current and has_child and current.is_expanded and cur_depth < agent.n_depth:
+            current, has_child = current.best_child(agent)
+            # if not has_child:
+            #     print(cur_depth)
+
+            cur_depth += 1
         return current
 
     # ************************** step 2: expansion *************************************************************************************
 
-    # def expand(self):
-    #     self.is_expanded = True
-    #     for action in self.get_actions():
-    #         self.add_child(action)
-    #
-    # def add_child(self, action):
-    #     if action not in self.children:
-    #         # print("    |", action)
-    #         opponent_node = OpponentNode(opponent_game_state=getNextState(self.game_state, action, self.player_id),
-    #                                      policy=self.policy,
-    #                                      my_player_id=self.player_id,
-    #                                      opponent_player_id=self.opponent_id)
-    #         self.opponent_nodes[action] = opponent_node
-    #         self.children[action] = []
-    #         for opponent_action in opponent_node.actions:
-    #             # print("        |", opponent_action)
-    #             s = opponent_node.get_next_state_by_action(opponent_action)
-    #             uct_node = UCTNode(game_state=s, player_id=self.player_id, opponent_id=self.opponent_id, policy=self.policy,
-    #                                parent_opponent_action=opponent_action, parent_move=action, parent=self)
-    #
-    #             self.children[action].append(uct_node)
-    #             opponent_node.set_children_uct_node_by_opponent_action(opponent_action, uct_node)
+    def expand(self):
+        if not self.is_expanded:
+            self.is_expanded = True
+            for action in self.get_actions():
+                self.add_child(action)
+        else:
+            # print("no expansion")
+            pass
 
-    # def add_opponent_node(self, action, next_state):
-    #     self.opponent_nodes[action] = OpponentNode(next_state, self.policy, self.id, self.opponent_id)
+    def add_child(self, action):
+        if action in self.action_children:
+            # print("    |", action)
+            for child in self.action_children[action]:
+                child.initialize()
+        else:
+            print("error", action)
 
     # ************************** step 3: simulation *************************************************************************************
     def simulate(self):
@@ -170,7 +180,9 @@ class UCTNode:
         #  keep rank and lower score gives +0.5, etc)
         #  2. or simulate for N moves and if reach scoring phase before N moves then use the reward above otherwise use a reward for pattern line (....)
         #  3. how to deal with opponent's action? assume opponent choose the greedy action?
-        return simulation(self.game_state, self.player_id, self.opponent_id, random_simulation_policy, score_reward)
+        # return simulation(self.game_state, self.player_id, self.opponent_id, random_simulation_policy, score_reward)
+
+        return simulation(self.game_state, self.player_id, self.opponent_id, random_simulation_policy, delta_score_reward)
 
     # ************************** step 4: back-propagation *************************************************************************************
     def back_propagate(self, simulated_reward):
@@ -191,7 +203,7 @@ class myPlayer(AdvancePlayer):
         # read from setup file
         self.n_iter = 100
         self.cp = 0.7071
-        self.n_depth = 1
+        self.n_depth = 3
         self.gamma = 0.9
 
         self.opponent_id = None
@@ -236,7 +248,7 @@ class myPlayer(AdvancePlayer):
         N_ITER = 200
 
         elapsed = (time.time() - start)
-        timeout_threshold = timeout - 0.2 - elapsed
+        timeout_threshold = timeout - 0.1 - elapsed
         # print("timeout_threshold:", timeout_threshold, "branching factor: ", branching_factor)
 
         while True:
@@ -248,6 +260,7 @@ class myPlayer(AdvancePlayer):
 
             leaf = root.select_leaf(self)
             if not leaf:
+                print("#####", "error select leaf", "#####", moves)
                 return random.choice(moves)
             elapsed = (time.time() - start)
             if elapsed >= timeout_threshold:  # prevent 1 second timeout
@@ -255,11 +268,11 @@ class myPlayer(AdvancePlayer):
                 break
             # print("    ", "    select finished, used:", elapsed)
 
-            # leaf.expand()
-            # elapsed = (time.time() - start)
-            # if elapsed >= timeout_threshold:  # prevent 1 second timeout
-            #     print("timeout")
-            #     break
+            leaf.expand()
+            elapsed = (time.time() - start)
+            if elapsed >= timeout_threshold:  # prevent 1 second timeout
+                # print("timeout")
+                break
             # print("    expand finished, used:", elapsed)
 
             simulated_reward = leaf.simulate()
@@ -277,7 +290,7 @@ class myPlayer(AdvancePlayer):
             # print("    ", "    back propagate finished, used:", elapsed)
 
             counter += 1
-        # print("##########", counter, "##########")
+        print("##########", counter, "##########")
         cur_min = -float("inf")
         next_action = None
         for action, child in root.action_children.items():
@@ -285,13 +298,14 @@ class myPlayer(AdvancePlayer):
             for c in child:
                 if c.number_visits > 0:
                     child_value += c.total_value / c.number_visits
+                # print("    "*2, c.total_value, c.number_visits)
 
             if child_value > cur_min:
                 cur_min, next_action = child_value, action
 
-        # print(next_action, cur_min)
+        print(next_action, cur_min)
         elapsed = (time.time() - start)
-        # print("##########", counter, "##########", "total used: ", elapsed, "branching_factor: ", branching_factor)
+        print("##########", counter, "##########", "total used: ", elapsed, "branching_factor: ", branching_factor)
         return next_action
 
 
