@@ -21,15 +21,8 @@ class myPlayer(AdvancePlayer):
     # The following function should not be changed at all
     def __init__(self, _id):
         super().__init__(_id)
-        self.id = _id
         self.weights = [1, -0.4]
-        # decay for Q value
-        self.discount = 0.9
-        # learning rate for the Q value
-        self.alpha = 0.2
-        # exploration and exploitation rule for epsilon greedy
-        self.epsilon = 1
-        self.other_available = None
+
 
     # Each player is given 5 seconds when a new round started
     # If exceeds 5 seconds, all your code will be terminated and
@@ -105,10 +98,22 @@ class myPlayer(AdvancePlayer):
         # penalise add only a few grad to a long pattern
         tile_grab: TileGrab = move[-1]
         line_n = game_state.players[self.id].lines_number
-        # total capacity - tile already have - # we going to add
-        remains = (tile_grab.pattern_line_dest + 1) - line_n[tile_grab.pattern_line_dest] \
-                  - tile_grab.num_to_pattern_line
-        features.append(remains)
+
+        if tile_grab.pattern_line_dest != -1:
+            if line_n[tile_grab.pattern_line_dest] == 0:
+                # total capacity - tile already have - # we going to add
+                remains = (tile_grab.pattern_line_dest + 1) - tile_grab.num_to_pattern_line
+                features.append(remains)
+            else:
+                features.append(0)
+        else:
+            features.append(0)
+
+        # # give bonus to the line that
+        # if tile_grab.pattern_line_dest != -1:
+        #     features.append(line_n[tile_grab.pattern_line_dest])
+        # else:
+        #     features.append(0)
 
         return features
 
