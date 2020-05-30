@@ -124,9 +124,9 @@ def random_simulation_policy(game_state: GameState, actions: [(Move, int, TileGr
 
 def score_reward(game_state: GameState, player_id: int, opponent_id: int) -> float:
     # player_score = game_state.players[player_id].score
-    player_score = expectScore(game_state, player_id)
+    player_score = sum(expectScore(game_state, player_id))
     # opponent_score = game_state.players[opponent_id].score
-    opponent_score = expectScore(game_state, opponent_id)
+    opponent_score = sum(expectScore(game_state, opponent_id))
 
     if player_score > opponent_score:
         return 1
@@ -134,3 +134,12 @@ def score_reward(game_state: GameState, player_id: int, opponent_id: int) -> flo
         return 0.2
     else:
         return -1
+
+
+def delta_score_reward(game_state: GameState, player_id: int, opponent_id: int) -> float:
+    # player_score = game_state.players[player_id].score
+    player_score = sum(expectScore(game_state, player_id))
+    # opponent_score = game_state.players[opponent_id].score
+    opponent_score = sum(expectScore(game_state, opponent_id))
+
+    return player_score - opponent_score
