@@ -94,10 +94,10 @@ class myPlayer(AdvancePlayer):
         """
         features = []
         next_state = self.getNextState(game_state, move)
+        expect_gain = self.expectGain(game_state, next_state)
 
         # expected score for the current action exec
         if self.curr_round < myPlayer.IGNORE_BONUS_THRESHOLD:
-            expect_gain = self.expectGain(game_state, next_state)
 
             # TODO: examine this field
             # suppose 90% of game end in 5 rounds
@@ -112,7 +112,7 @@ class myPlayer(AdvancePlayer):
 
             features.append(expect_gain)
         else:
-            features.append(self.expectGain(game_state, next_state))
+            features.append(expect_gain)
 
         # penalise add only a few grad to a long pattern
         tile_grab: TileGrab = move[-1]
@@ -146,8 +146,10 @@ class myPlayer(AdvancePlayer):
         return next_state
 
     def expectGain(self, curr_state, next_state):
-        curr_expected_score, curr_bonus = self.expectScore(curr_state)
-        next_expected_score, next_bonus = self.expectScore(next_state)
+        copy_curr = deepcopy(curr_state)
+        copy_next = deepcopy(next_state)
+        curr_expected_score, curr_bonus = self.expectScore(copy_curr)
+        next_expected_score, next_bonus = self.expectScore(copy_next)
 
         return next_expected_score + next_bonus - curr_expected_score - curr_bonus
 
