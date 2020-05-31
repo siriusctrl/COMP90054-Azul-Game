@@ -23,7 +23,7 @@ class myPlayer(AdvancePlayer):
     # The following function should not be changed at all
     def __init__(self, _id):
         super().__init__(_id)
-        self.weights = [1, -0.4, 0.015]
+        self.weights = [1, -0.4, 0.015, 0.01]
         self.curr_round = -1
 
     # Each player is given 5 seconds when a new round started
@@ -131,11 +131,11 @@ class myPlayer(AdvancePlayer):
         # give a slightly higher point to collect more
         features.append(move[-1].num_to_pattern_line)
 
-        # # give bonus to the line that
-        # if tile_grab.pattern_line_dest != -1:
-        #     features.append(line_n[tile_grab.pattern_line_dest])
-        # else:
-        #     features.append(0)
+        # give bonus to the pattern line that already have some tile
+        if tile_grab.pattern_line_dest != -1:
+            features.append(line_n[tile_grab.pattern_line_dest])
+        else:
+            features.append(0)
 
         return features
 
