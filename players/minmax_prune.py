@@ -97,7 +97,7 @@ class myPlayer(AdvancePlayer):
         return result
 
     def StartRound(self, game_state):
-        print("------------------ round start ------------------")
+        # print("------------------ round start ------------------")
 
         # we have an increasing focus on the bonus as the game goes
         self.turn += 1
@@ -105,16 +105,16 @@ class myPlayer(AdvancePlayer):
         self.final_bonus_weight = min(self.final_bonus_weight, 1)
 
         # check all the moves at the start of the round
-        self.is_my_first_move = True
-        moves = game_state.players[self.id].GetAvailableMoves(game_state)
-        for move in moves:
-            # The strategy for round 1
-            if self.turn == 1:
-                tile = move[2]
-                # if it is the blue tile and can add to the middle, perform it
-                if tile.tile_type == 0:
-                    if tile.number == 3 and tile.pattern_line_dest == 2:
-                        return move
+        # self.is_my_first_move = True
+        # moves = game_state.players[self.id].GetAvailableMoves(game_state)
+        # for move in moves:
+        #     # The strategy for round 1
+        #     if self.turn == 1:
+        #         tile = move[2]
+        #         # if it is the blue tile and can add to the middle, perform it
+        #         if tile.tile_type == 0:
+        #             if tile.number == 3 and tile.pattern_line_dest == 2:
+        #                 return move
         return None
 
     def SelectMove(self, moves: [(Move, int, TileGrab)], game_state: GameState):
@@ -127,18 +127,18 @@ class myPlayer(AdvancePlayer):
         """
 
         # First of all, consider the first move decided at the start of the turn
-        if self.is_my_first_move:
-            self.is_my_first_move = False
-            if self.first_move is not None:
-                if self.first_move in moves:
-                    return self.first_move
+        # if self.is_my_first_move:
+        #     self.is_my_first_move = False
+        #     if self.first_move is not None:
+        #         if self.first_move in moves:
+        #             return self.first_move
 
         # If there is no best obvious move, take consider of all possible moves
         best_score = float("-inf")
         best_move = None
 
         # Right now the depthest level it can reach is only max without min due to time
-        depth = 2
+        depth = 0
 
         # possible move to add 1 grid, 2 grid and so on
         # possible_fill = [0, 0, 0, 0, 0]
@@ -158,26 +158,29 @@ class myPlayer(AdvancePlayer):
 
         # print(len(my_advance_actions))
         top_5_actions = self.greedy_agent.SelectTopMove(moves, game_state, 5)
+        # top_5_actions = self.SelectTopMove(moves, game_state, 5)
         # print(top_5_actions)
-        print("------- top 5 start -----")
-        for action in top_5_actions:
-            print((action[0], action[1], (
-                        action[2].tile_type,
-                        action[2].number,
-                        action[2].pattern_line_dest,
-                        action[2].num_to_pattern_line,
-                        action[2].num_to_floor_line,
-                        )
-                   )
-                  )
-        print("------- top 5 end -----")
+        # print("------- top 5 start -----")
+        # for action in top_5_actions:
+        #     print((action[0], action[1], (
+        #                 action[2].tile_type,
+        #                 action[2].number,
+        #                 action[2].pattern_line_dest,
+        #                 action[2].num_to_pattern_line,
+        #                 action[2].num_to_floor_line,
+        #                 )
+        #            )
+        #           )
+        # print("------- top 5 end -----")
         # print(top_5_actions)
         for move in top_5_actions:
+            print("top n:", move, self.greedy_agent.getQValue(game_state, move))
             move_score = self.MiniMax(move, game_state, depth, self.id)
             if move_score > best_score:
                 best_score = move_score
                 best_move = move
-        # print(best_move)
+        print("best: ", best_move, self.greedy_agent.getQValue(game_state, best_move))
+        print("---------")
         return best_move
 
     def MiniMax(self, move: (Move, int, TileGrab), game_state: GameState, depth: int, player_id: int):
@@ -185,8 +188,8 @@ class myPlayer(AdvancePlayer):
         expected_score, _ = current_state.players[self.id].ScoreRound()
         # finish diving when it is the highest depth or the end of the game
         if depth == 0:
-            return self.greedy_agent.getQValue(current_state, move)
-            # return self.ExpectScoreAfterMyMove(move, current_state, expected_score)
+            # return self.greedy_agent.getQValue(game_state, move)
+            return self.ExpectScoreAfterMyMove(move, game_state, expected_score)
 
         # get the state after the move
         next_state = deepcopy(game_state)
@@ -197,8 +200,8 @@ class myPlayer(AdvancePlayer):
         # check all possible moves for next player, if none, return current state value
         next_player_moves = next_state.players[next_player_id].GetAvailableMoves(next_state)
         if len(next_player_moves) == 0:
-            return self.greedy_agent.getQValue(current_state, move)
-            # return self.ExpectScoreAfterMyMove(move, current_state, expected_score)
+            # return self.greedy_agent.getQValue(game_state, move)
+            return self.ExpectScoreAfterMyMove(move, game_state, expected_score)
 
         # maximum score part
         if next_player_id == self.id:
@@ -219,6 +222,7 @@ class myPlayer(AdvancePlayer):
 
             # print(len(my_advance_actions))
             top_5_actions = self.greedy_agent.SelectTopMove(next_player_moves, next_state, 5)
+            # top_5_actions = self.SelectTopMove(next_player_moves, next_state, 5)
 
             best_score = float("-inf")
             for my_move in top_5_actions:
@@ -229,10 +233,33 @@ class myPlayer(AdvancePlayer):
         # minimal score part
         else:
             # assume opponent make a greedy choice
-            print("self.opponent_agent.SelectMove")
+            # print("self.opponent_agent.SelectMove")
             opponent_move = self.opponent_agent.SelectMove(next_player_moves, next_state)
             move_score = self.MiniMax(opponent_move, next_state, new_depth, next_player_id)
             return move_score
+
+    def SelectTopMove(self, moves: [(Move, int, TileGrab)], game_state: GameState, n=5):
+        hq = PriorityQueue()
+        # print("###########")
+        for m in moves:
+            # print("###########", m)
+            current_state = deepcopy(game_state)
+            expected_score, _ = current_state.players[self.id].ScoreRound()
+            q_value = self.ExpectScoreAfterMyMove(m, game_state, expected_score)
+            # print("###########1", m)
+
+            hq.push(m, q_value)
+
+            if hq.count > n:
+                hq.pop()
+            # print("###########2", m)
+
+        result = []
+        # print("------- start ------")
+        while not hq.isEmpty():
+            result.append(hq.pop())
+        # print("------- end ------")
+        return result
 
     def ExpectScoreAfterMyMove(self, move: (Move, int, TileGrab), game_state: GameState, neighbour_bonus: float):
         """
@@ -395,7 +422,7 @@ class GreedyAgent(AdvancePlayer):
         # print("###########")
         for m in moves:
             # print("###########", m)
-            q_value = 1 * self.getQValue(game_state, m)
+            q_value = self.getQValue(game_state, m)
             # print("###########1", m)
 
             hq.push(m, q_value)
