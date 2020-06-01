@@ -97,6 +97,8 @@ class myPlayer(AdvancePlayer):
         return result
 
     def StartRound(self, game_state):
+        print("------------------ round start ------------------")
+
         # we have an increasing focus on the bonus as the game goes
         self.turn += 1
         self.final_bonus_weight += 0.2
@@ -157,6 +159,19 @@ class myPlayer(AdvancePlayer):
         # print(len(my_advance_actions))
         top_5_actions = self.greedy_agent.SelectTopMove(moves, game_state, 5)
         # print(top_5_actions)
+        print("------- top 5 start -----")
+        for action in top_5_actions:
+            print((action[0], action[1], (
+                        action[2].tile_type,
+                        action[2].number,
+                        action[2].pattern_line_dest,
+                        action[2].num_to_pattern_line,
+                        action[2].num_to_floor_line,
+                        )
+                   )
+                  )
+        print("------- top 5 end -----")
+        # print(top_5_actions)
         for move in top_5_actions:
             move_score = self.MiniMax(move, game_state, depth, self.id)
             if move_score > best_score:
@@ -170,7 +185,8 @@ class myPlayer(AdvancePlayer):
         expected_score, _ = current_state.players[self.id].ScoreRound()
         # finish diving when it is the highest depth or the end of the game
         if depth == 0:
-            return self.ExpectScoreAfterMyMove(move, current_state, expected_score)
+            return self.greedy_agent.getQValue(current_state, move)
+            # return self.ExpectScoreAfterMyMove(move, current_state, expected_score)
 
         # get the state after the move
         next_state = deepcopy(game_state)
@@ -181,7 +197,8 @@ class myPlayer(AdvancePlayer):
         # check all possible moves for next player, if none, return current state value
         next_player_moves = next_state.players[next_player_id].GetAvailableMoves(next_state)
         if len(next_player_moves) == 0:
-            return self.ExpectScoreAfterMyMove(move, current_state, expected_score)
+            return self.greedy_agent.getQValue(current_state, move)
+            # return self.ExpectScoreAfterMyMove(move, current_state, expected_score)
 
         # maximum score part
         if next_player_id == self.id:
@@ -386,7 +403,7 @@ class GreedyAgent(AdvancePlayer):
                 pq_min, item = hq.pop_priority_item()
 
                 if q_value > pq_min:
-                    print(pq_min, item)
+                    # print(pq_min, item)
                     hq.push(m, q_value)
                 else:
                     hq.push(item, pq_min)
