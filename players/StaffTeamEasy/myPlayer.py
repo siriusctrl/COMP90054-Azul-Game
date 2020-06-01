@@ -73,6 +73,13 @@ class myPlayer(AdvancePlayer):
         # Right now the depthest level it can reach is only max without min due to time
         depth = 0
 
+        # possible move to add 1 grid, 2 grid and so on
+        # possible_fill = [0, 0, 0, 0, 0]
+        # for move in moves:
+        #     tile_grab = move[2]
+        #     if tile_grab.num_to_floor_line == 0:
+        #         possible_fill[tile_grab.num_to_pattern_line - 1] += 1
+
         for move in moves:
             move_score = self.MiniMax(move, game_state, depth, self.id)
             if move_score > best_score:
@@ -186,10 +193,23 @@ class myPlayer(AdvancePlayer):
             elif tile_colour == 2:
                 final_score += 0.00004
 
-        # Feature 7: If there are some 1 tile in the factory or in the center
-        # we don't need to fill the first row hurry, same for
-
-
+        # # Feature 7: If there are some same tiles with same amount in the factory or in the center
+        # # we don't need to fill the current tile so hurry
+        # find_same = 0
+        # for i in [0, 5]:
+        #     if game_state.factories[0].tiles[tile_colour] == num_add_to_line:
+        #         find_same += 1
+        # if find_same < 3:
+        #     if game_state.centre_pool.tiles[tile_colour] == num_add_to_line:
+        #         find_same += 1
+        #
+        # if find_same >= 3:
+        #     final_score -= 10
+        #
+        # # Feature 8: give bonus to the pattern line that already have some tile
+        # if tile_grab.pattern_line_dest != -1:
+        #     final_score += line_n[tile_grab.pattern_line_dest] * 0.0001
+        
         return final_score
 
 
