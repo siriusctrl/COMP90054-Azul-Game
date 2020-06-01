@@ -32,7 +32,68 @@ class myPlayer(AdvancePlayer):
         self.first_move = None
 
         self.opponent_id = abs(1 - self.id)
-        self.oppoent_agent = GreedyAgent(self.opponent_id)
+        self.opponent_agent = GreedyAgent(self.opponent_id)
+
+    def advance_get_available_actions(self, moves: [(Move, int, TileGrab)], game_state: GameState, player_id: int):
+        player_state = game_state.players[player_id]
+
+        result = [[] for _ in range(5)]
+
+        for action in moves:
+            move, factory, tile_grab = action
+
+            pattern_tile_numbers = tile_grab.pattern_line_dest + 1
+
+            current_pattern_line_has = player_state.lines_number[tile_grab.pattern_line_dest]
+
+            take_from_center = move == Move.TAKE_FROM_CENTRE
+
+            first_player_taken = take_from_center and not game_state.first_player_taken
+
+            no_tile_to_floor_line = tile_grab.num_to_floor_line == 0
+            only_take_first_player_token = tile_grab.num_to_pattern_line == 1 and first_player_taken
+
+            # print(move, factory, seeTile(tile_grab))
+            # print(no_tile_to_floor_line, only_take_first_player_token,
+            #       (pattern_tile_numbers == current_pattern_line_has + tile_grab.num_to_pattern_line, pattern_tile_numbers, current_pattern_line_has, tile_grab.num_to_pattern_line)
+            #       )
+            # 1. fill a line and with no tile to floor line or only one 1st player token
+            if (no_tile_to_floor_line or only_take_first_player_token) and \
+                    pattern_tile_numbers == current_pattern_line_has + tile_grab.num_to_pattern_line and \
+                    tile_grab.num_to_pattern_line > 0:
+                # print(0)
+                result[0].append(action)
+                continue
+
+            # 2. not fill a line and with no tile to floor line or only one 1st player token
+            if (no_tile_to_floor_line or only_take_first_player_token) and \
+                    pattern_tile_numbers > current_pattern_line_has + tile_grab.num_to_pattern_line and \
+                    tile_grab.num_to_pattern_line > 0:
+                result[1].append(action)
+                # print(1)
+                continue
+
+            # 3. fill a line and with some tile to floor line or only one 1st player token
+            if ((not no_tile_to_floor_line) or only_take_first_player_token) and \
+                    pattern_tile_numbers == current_pattern_line_has + tile_grab.num_to_pattern_line and \
+                    tile_grab.num_to_pattern_line > 0:
+                result[2].append(action)
+                # print(2)
+                continue
+
+            # 4. not fill a line and with some tile to floor line or only one 1st player token
+            if ((not no_tile_to_floor_line) or only_take_first_player_token) and \
+                    pattern_tile_numbers > current_pattern_line_has + tile_grab.num_to_pattern_line and \
+                    tile_grab.num_to_pattern_line > 0:
+                result[3].append(action)
+                # print(3)
+                continue
+
+            # 5. others
+            # print(4)
+            result[4].append(action)
+
+        return result
 
     def StartRound(self, game_state):
         # we have an increasing focus on the bonus as the game goes
@@ -74,7 +135,7 @@ class myPlayer(AdvancePlayer):
         best_move = None
 
         # Right now the depthest level it can reach is only max without min due to time
-        depth = 2
+        depth = 0
 
         # possible move to add 1 grid, 2 grid and so on
         # possible_fill = [0, 0, 0, 0, 0]
@@ -83,7 +144,16 @@ class myPlayer(AdvancePlayer):
         #     if tile_grab.num_to_floor_line == 0:
         #         possible_fill[tile_grab.num_to_pattern_line - 1] += 1
 
-        for move in moves:
+        actions_size = len(moves)
+        my_advance_actions = self.advance_get_available_actions(moves, game_state, self.id)
+        type_1_size = len(my_advance_actions[0])
+
+        if type_1_size > 0.1 * actions_size:
+            my_advance_actions = my_advance_actions[0]
+        else:
+            my_advance_actions = my_advance_actions[0] + my_advance_actions[1] + my_advance_actions[2]
+
+        for move in my_advance_actions:
             move_score = self.MiniMax(move, game_state, depth, self.id)
             if move_score > best_score:
                 best_score = move_score
@@ -110,6 +180,14 @@ class myPlayer(AdvancePlayer):
 
         # maximum score part
         if next_player_id == self.id:
+            # actions_size = len(next_player_moves)
+            # my_advance_actions = self.advance_get_available_actions(next_player_moves, next_state, self.id)
+            # type_1_size = len(my_advance_actions[0])
+            #
+            # if type_1_size / actions_size > 0.1:
+
+
+
             best_score = float("-inf")
             for my_move in next_player_moves:
                 move_score = self.MiniMax(my_move, next_state, new_depth, next_player_id)
@@ -119,7 +197,7 @@ class myPlayer(AdvancePlayer):
         # minimal score part
         else:
             # assume opponent make a greedy choice
-            opponent_move = self.oppoent_agent.SelectMove(next_player_moves, next_state)
+            opponent_move = self.opponent_agent.SelectMove(next_player_moves, next_state)
             move_score = self.MiniMax(opponent_move, next_state, new_depth, next_player_id)
             return move_score
 
