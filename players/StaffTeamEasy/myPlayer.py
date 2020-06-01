@@ -209,7 +209,8 @@ class myPlayer(AdvancePlayer):
         # # Feature 8: give bonus to the pattern line that already have some tile
         # if tile_grab.pattern_line_dest != -1:
         #     final_score += line_n[tile_grab.pattern_line_dest] * 0.0001
-        
+
+
         return final_score
 
 
