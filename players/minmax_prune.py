@@ -3,7 +3,7 @@ The University of Melbourne
 author: Wenrui Zhang 872427
 The implementation of miniMax algorithm
 """
-
+import heapq
 import sys
 sys.path.append("players/StaffTeamEasy")
 
@@ -33,6 +33,7 @@ class myPlayer(AdvancePlayer):
 
         self.opponent_id = abs(1 - self.id)
         self.opponent_agent = GreedyAgent(self.opponent_id)
+        self.greedy_agent = GreedyAgent(self.id)
 
     def advance_get_available_actions(self, moves: [(Move, int, TileGrab)], game_state: GameState, player_id: int):
         player_state = game_state.players[player_id]
@@ -99,7 +100,7 @@ class myPlayer(AdvancePlayer):
         # we have an increasing focus on the bonus as the game goes
         self.turn += 1
         self.final_bonus_weight += 0.2
-        self.final_bonus_weight = min(self.bonus_weight, 1)
+        self.final_bonus_weight = min(self.final_bonus_weight, 1)
 
         # check all the moves at the start of the round
         self.is_my_first_move = True
@@ -135,7 +136,7 @@ class myPlayer(AdvancePlayer):
         best_move = None
 
         # Right now the depthest level it can reach is only max without min due to time
-        depth = 0
+        depth = 2
 
         # possible move to add 1 grid, 2 grid and so on
         # possible_fill = [0, 0, 0, 0, 0]
@@ -153,11 +154,15 @@ class myPlayer(AdvancePlayer):
         else:
             my_advance_actions = my_advance_actions[0] + my_advance_actions[1] + my_advance_actions[2]
 
-        for move in my_advance_actions:
+        # print(len(my_advance_actions))
+        top_5_actions = self.greedy_agent.SelectTopMove(my_advance_actions, game_state, 5)
+        # print(top_5_actions)
+        for move in top_5_actions:
             move_score = self.MiniMax(move, game_state, depth, self.id)
             if move_score > best_score:
                 best_score = move_score
                 best_move = move
+        # print(best_move)
         return best_move
 
     def MiniMax(self, move: (Move, int, TileGrab), game_state: GameState, depth: int, player_id: int):
@@ -186,10 +191,20 @@ class myPlayer(AdvancePlayer):
             #
             # if type_1_size / actions_size > 0.1:
 
+            actions_size = len(next_player_moves)
+            my_advance_actions = self.advance_get_available_actions(next_player_moves, next_state, self.id)
+            type_1_size = len(my_advance_actions[0])
 
+            if type_1_size > 0.1 * actions_size:
+                my_advance_actions = my_advance_actions[0]
+            else:
+                my_advance_actions = my_advance_actions[0] + my_advance_actions[1] + my_advance_actions[2]
+
+            # print(len(my_advance_actions))
+            top_5_actions = self.greedy_agent.SelectTopMove(my_advance_actions, next_state, 5)
 
             best_score = float("-inf")
-            for my_move in next_player_moves:
+            for my_move in top_5_actions:
                 move_score = self.MiniMax(my_move, next_state, new_depth, next_player_id)
                 best_score = max(best_score, move_score)
             return best_score
@@ -197,6 +212,7 @@ class myPlayer(AdvancePlayer):
         # minimal score part
         else:
             # assume opponent make a greedy choice
+            print("self.opponent_agent.SelectMove")
             opponent_move = self.opponent_agent.SelectMove(next_player_moves, next_state)
             move_score = self.MiniMax(opponent_move, next_state, new_depth, next_player_id)
             return move_score
@@ -293,6 +309,69 @@ class myPlayer(AdvancePlayer):
         return final_score
 
 
+# class Pair:
+#     def __init__(self, k, v):
+#         self.k = k
+#         self.v = v
+#
+#     def __cmp__(self, other):
+#         if self.k < other.k:
+#             return -1
+#         elif self.k > other.k:
+#             return 1
+#         else:
+#             return 0
+#
+#     def __eq__(self, other):
+#         return self.k == other.k
+#
+#     def __gt__(self, other):
+#         return self.k > other.k
+#
+#     def __lt__(self, other):
+#         return self.k < other.k
+
+
+class PriorityQueue:
+    """
+    Implements a priority queue data structure. Each inserted item
+    has a priority associated with it and the client is usually interested
+    in quick retrieval of the lowest-priority item in the queue. This
+    data structure allows O(1) access to the lowest-priority item.
+    """
+
+    def __init__(self):
+        self.heap = []
+        self.count = 0
+
+    def push(self, item, priority):
+        entry = (priority, self.count, item)
+        heapq.heappush(self.heap, entry)
+        self.count += 1
+
+    def pop(self):
+        (_, _, item) = heapq.heappop(self.heap)
+        return item
+
+    def isEmpty(self):
+        return len(self.heap) == 0
+
+    def update(self, item, priority):
+        # If item already in priority queue with higher priority, update its priority and rebuild the heap.
+        # If item already in priority queue with equal or lower priority, do nothing.
+        # If item not in priority queue, do the same thing as self.push.
+        for index, (p, c, i) in enumerate(self.heap):
+            if i == item:
+                if p <= priority:
+                    break
+                del self.heap[index]
+                self.heap.append((priority, c, item))
+                heapq.heapify(self.heap)
+                break
+        else:
+            self.push(item, priority)
+
+
 class GreedyAgent(AdvancePlayer):
     IGNORE_BONUS_THRESHOLD = 3
 
@@ -310,6 +389,30 @@ class GreedyAgent(AdvancePlayer):
         self.curr_round += 1
         print("---------- round", self.curr_round, "start ------------")
         return None
+
+    def SelectTopMove(self, moves: [(Move, int, TileGrab)], game_state: GameState, n=5):
+        import heapq
+
+        hq = PriorityQueue()
+        cur_min = float("-inf")
+
+        # print("###########")
+
+        for m in moves:
+            # print("###########", m)
+            q_value = self.getQValue(game_state, m)
+            # print("###########1", m)
+            if hq.count < n:
+                hq.push(m, q_value)
+            else:
+                hq.pop()
+                hq.push(m, q_value)
+            # print("###########2", m)
+
+        result = []
+        while not hq.isEmpty():
+            result.append(hq.pop())
+        return result
 
     # Each player is given 1 second to select next best move
     # If exceeds 5 seconds, all your code will be terminated,
@@ -359,7 +462,7 @@ class GreedyAgent(AdvancePlayer):
         expect_gain = self.expectGain(game_state, next_state)
 
         # expected score for the current action exec
-        if self.curr_round < myPlayer.IGNORE_BONUS_THRESHOLD:
+        if self.curr_round < self.IGNORE_BONUS_THRESHOLD:
 
             # TODO: examine this field
             # suppose 90% of game end in 5 rounds
