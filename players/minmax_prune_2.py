@@ -210,6 +210,7 @@ class myPlayer(AdvancePlayer):
         next_player_moves = next_state.players[next_player_id].GetAvailableMoves(next_state)
         if len(next_player_moves) == 0:
             # return self.greedy_agent.getQValue(game_state, move)
+            # TODO we have to make sure the minimax end at our side
             if player_id == self.opponent_id:
                 return False
             else:
@@ -238,8 +239,10 @@ class myPlayer(AdvancePlayer):
 
             best_score = float("-inf")
             for my_move in top_5_actions:
-                move_score = self.MiniMax(my_move, next_state, new_depth, next_player_id, root_data)
-                best_score = max(best_score, move_score)
+                # move_score = self.MiniMax(my_move, next_state, new_depth, next_player_id, root_data)
+                # best_score = max(best_score, move_score)
+                return_state = self.MiniMax(my_move, next_state, new_depth, next_player_id, root_data)
+
             return best_score
 
         # minimal score part
@@ -278,6 +281,15 @@ class myPlayer(AdvancePlayer):
             result.append(hq.pop())
         # print("------- end ------")
         return result
+
+    def expect_gain_with_root(self, curr_state: GameState, root_data: float) -> float:
+        copy_curr: GameState = deepcopy(curr_state)
+        curr_player = copy_curr.players[self.id]
+        expect_score, _ = curr_player.ScoreRound()
+        expect_bonus = curr_player.EndOfGameScore()
+
+        return expect_score - expect_bonus - root_data
+
 
     def ExpectScoreAfterMyMove(self, move: (Move, int, TileGrab), game_state: GameState, next_game_state: GameState, root_data: list):
         """

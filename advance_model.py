@@ -146,44 +146,47 @@ class AdvanceGameRunner:
                 
                 try:
                     selected = func_timeout(self.time_limit,self.players[i].SelectMove,args=(moves_copy, gs_copy))
-
-                except AttributeError:
-                    print("[AttributeError]: SelectMove() is not defined!")
-                    print("Selecting random move instead!")
-                    self.warnings[i] += 1
-                    if self.displayer is not None:
-                        self.displayer.TimeOutWarning(self,i)
-                    self.warning_positions.append((i,round_count,move_count))
-
-                    if self.warnings[i] == self.warning_limit:
-                        player_traces = self._EndGame(player_order,isTimeOut=True,id=i)
-                        return player_traces
-                    selected = random.choice(moves)
-
-                except FunctionTimedOut:
-                    print("[TimeoutError] timeout when calling SelectMove()!")
-                    print("Selecting random move instead!")
-                    self.warnings[i] += 1
-                    if self.displayer is not None:
-                        self.displayer.TimeOutWarning(self,i)
-                    self.warning_positions.append((i,round_count,move_count))
-
-                    if self.warnings[i] == self.warning_limit:
-                        player_traces = self._EndGame(player_order,isTimeOut=True,id=i)
-                        return player_traces
-                    selected = random.choice(moves)
                 except:
-                    print("[OtherError] error occured when calling SelectMove()!")
-                    print("Selecting random move instead!")
-                    self.warnings[i] += 1
-                    if self.displayer is not None:
-                        self.displayer.TimeOutWarning(self,i)
-                    self.warning_positions.append((i,round_count,move_count))
-
-                    if self.warnings[i] == self.warning_limit:
-                        player_traces = self._EndGame(player_order,isTimeOut=True,id=i)
-                        return player_traces
-                    selected = random.choice(moves)
+                    import traceback
+                    traceback.print_tb()
+                    exit(0)
+                # except AttributeError:
+                #     print("[AttributeError]: SelectMove() is not defined!")
+                #     print("Selecting random move instead!")
+                #     self.warnings[i] += 1
+                #     if self.displayer is not None:
+                #         self.displayer.TimeOutWarning(self,i)
+                #     self.warning_positions.append((i,round_count,move_count))
+                #
+                #     if self.warnings[i] == self.warning_limit:
+                #         player_traces = self._EndGame(player_order,isTimeOut=True,id=i)
+                #         return player_traces
+                #     selected = random.choice(moves)
+                #
+                # except FunctionTimedOut:
+                #     print("[TimeoutError] timeout when calling SelectMove()!")
+                #     print("Selecting random move instead!")
+                #     self.warnings[i] += 1
+                #     if self.displayer is not None:
+                #         self.displayer.TimeOutWarning(self,i)
+                #     self.warning_positions.append((i,round_count,move_count))
+                #
+                #     if self.warnings[i] == self.warning_limit:
+                #         player_traces = self._EndGame(player_order,isTimeOut=True,id=i)
+                #         return player_traces
+                #     selected = random.choice(moves)
+                # except:
+                #     print("[OtherError] error occured when calling SelectMove()!")
+                #     print("Selecting random move instead!")
+                #     self.warnings[i] += 1
+                #     if self.displayer is not None:
+                #         self.displayer.TimeOutWarning(self,i)
+                #     self.warning_positions.append((i,round_count,move_count))
+                #
+                #     if self.warnings[i] == self.warning_limit:
+                #         player_traces = self._EndGame(player_order,isTimeOut=True,id=i)
+                #         return player_traces
+                #     selected = random.choice(moves)
 
                 # None is considered as an invalid move.
                 if selected is None:
