@@ -106,9 +106,10 @@ class AdvanceGameRunner:
             try:
                 func_timeout(self.startRound_time_limit,self.players[i].StartRound,args=(gs_copy,))
             except AttributeError:
+                print("[WARNING] StartRound() function is not defined.")
                 pass
-            # except FunctionTimedOut:
-            except:
+            except FunctionTimedOut:
+                print("[TimeourError] timeout when calling StartRound()!")
                 self.warnings[i] += 1
                 if self.displayer is not None:
                     self.displayer.TimeOutWarning(self,i)
@@ -117,6 +118,16 @@ class AdvanceGameRunner:
                 if self.warnings[i] == self.warning_limit:
                     player_traces = self._EndGame(player_order,isTimeOut=True,id=i)
                     return player_traces
+            except:
+                print("[OtherError] Error occured when calling StartRound()!")
+                self.warnings[i] += 1
+                if self.displayer is not None:
+                    self.displayer.TimeOutWarning(self,i)
+                self.warning_positions.append((i,round_count,-1))
+
+                if self.warnings[i] == self.warning_limit:
+                    player_traces = self._EndGame(player_order,isTimeOut=True,id=i)
+                    return player_traces    
 
                     
         random.seed(self.seed_list[self.seed_idx])
@@ -135,11 +146,10 @@ class AdvanceGameRunner:
                 
                 try:
                     selected = func_timeout(self.time_limit,self.players[i].SelectMove,args=(moves_copy, gs_copy))
+
                 except AttributeError:
-                    pass
-                # except FunctionTimedOut:
-                # FIXME only allow the function to catch function timeout error as otherwise too hard to debug
-                except FunctionTimedOut:
+                    print("[AttributeError]: SelectMove() is not defined!")
+                    print("Selecting random move instead!")
                     self.warnings[i] += 1
                     if self.displayer is not None:
                         self.displayer.TimeOutWarning(self,i)
@@ -148,12 +158,49 @@ class AdvanceGameRunner:
                     if self.warnings[i] == self.warning_limit:
                         player_traces = self._EndGame(player_order,isTimeOut=True,id=i)
                         return player_traces
-                    
                     selected = random.choice(moves)
 
-                    
-                    
-                assert(ValidMove(selected, moves))
+                except FunctionTimedOut:
+                    print("[TimeoutError] timeout when calling SelectMove()!")
+                    print("Selecting random move instead!")
+                    self.warnings[i] += 1
+                    if self.displayer is not None:
+                        self.displayer.TimeOutWarning(self,i)
+                    self.warning_positions.append((i,round_count,move_count))
+
+                    if self.warnings[i] == self.warning_limit:
+                        player_traces = self._EndGame(player_order,isTimeOut=True,id=i)
+                        return player_traces
+                    selected = random.choice(moves)
+                except:
+                    print("[OtherError] error occured when calling SelectMove()!")
+                    print("Selecting random move instead!")
+                    self.warnings[i] += 1
+                    if self.displayer is not None:
+                        self.displayer.TimeOutWarning(self,i)
+                    self.warning_positions.append((i,round_count,move_count))
+
+                    if self.warnings[i] == self.warning_limit:
+                        player_traces = self._EndGame(player_order,isTimeOut=True,id=i)
+                        return player_traces
+                    selected = random.choice(moves)
+
+                # None is considered as an invalid move.
+                if selected is None:
+                    selected = random.choice(moves)
+                    self.warnings[i] += 1
+                    if self.warnings[i] == self.warning_limit:
+                        player_traces = self._EndGame(player_order,isTimeOut=True,id=i)
+                        return player_traces
+
+                # if the player return invalid move, we choose a random action, and add 1 warning as penalty    
+                if not ValidMove(selected, moves):
+                    selected = random.choice(moves)
+                    self.warnings[i] += 1
+                    if self.warnings[i] == self.warning_limit:
+                        player_traces = self._EndGame(player_order,isTimeOut=True,id=i)
+                        return player_traces
+
                 random.seed(self.seed_list[self.seed_idx])
                 self.seed_idx += 1
                 self.game_state.ExecuteMove(i, selected)
@@ -204,9 +251,10 @@ class AdvanceGameRunner:
                     try:
                         func_timeout(self.startRound_time_limit,self.players[i].StartRound,args=(gs_copy,))
                     except AttributeError:
+                        print("[WARNING] StartRound() function is not defined.")
                         pass
-                    # except FunctionTimedOut:
-                    except:
+                    except FunctionTimedOut:
+                        print("[TimeourError] timeout when calling StartRound()!")
                         self.warnings[i] += 1
                         if self.displayer is not None:
                             self.displayer.TimeOutWarning(self,i)
@@ -215,6 +263,18 @@ class AdvanceGameRunner:
                         if self.warnings[i] == self.warning_limit:
                             player_traces = self._EndGame(player_order,isTimeOut=True,id=i)
                             return player_traces
+                    except:
+                        print("[OtherError] Error occured when calling StartRound()!")
+                        self.warnings[i] += 1
+                        if self.displayer is not None:
+                            self.displayer.TimeOutWarning(self,i)
+                        self.warning_positions.append((i,round_count,-1))
+
+                        if self.warnings[i] == self.warning_limit:
+                            player_traces = self._EndGame(player_order,isTimeOut=True,id=i)
+                            return player_traces                        
+                        
+
                                     
                 random.seed(self.seed_list[self.seed_idx])
                 self.seed_idx += 1
@@ -247,8 +307,7 @@ class ReplayRunner:
 
         self.displayer = displayer
         if self.displayer is not None:
-            self.displayer.InitDisplayer(self)
-            
+            self.displayer.InitDisplayer(self)           
   
     def Run(self):
         player_order = []
@@ -302,7 +361,18 @@ class ReplayRunner:
                 selected = self.replay[i][1].moves[round_count][move_count]
                 
                 
-                assert(ValidMove(selected, moves))
+                # if the player return invalid move, we choose a random action, and add 1 warning as penalty
+                # in replay, all moves are valid, so commented this out
+
+                # if not ValidMove(selected, moves):
+                #     selected = random.choice(moves)
+                #     self.warnings[i] += 1
+                #     if self.warnings[i] == self.warning_limit:                        
+                #         self.game_state.players[i].score = -1
+                #         if self.displayer is not None:
+                #             self.displayer.EndGame(self.game_state)
+                #         return self.displayer
+                        
                 random.seed(self.seed_list[self.seed_idx])
                 self.seed_idx += 1
                 self.game_state.ExecuteMove(i, selected)
