@@ -145,17 +145,17 @@ class myPlayer(AdvancePlayer):
         #     if tile_grab.num_to_floor_line == 0:
         #         possible_fill[tile_grab.num_to_pattern_line - 1] += 1
 
-        actions_size = len(moves)
-        my_advance_actions = self.advance_get_available_actions(moves, game_state, self.id)
-        type_1_size = len(my_advance_actions[0])
-
-        if type_1_size > 0.1 * actions_size:
-            my_advance_actions = my_advance_actions[0]
-        else:
-            my_advance_actions = my_advance_actions[0] + my_advance_actions[1] + my_advance_actions[2]
+        # actions_size = len(moves)
+        # my_advance_actions = self.advance_get_available_actions(moves, game_state, self.id)
+        # type_1_size = len(my_advance_actions[0])
+        #
+        # if type_1_size > 0.1 * actions_size:
+        #     my_advance_actions = my_advance_actions[0]
+        # else:
+        #     my_advance_actions = my_advance_actions[0] + my_advance_actions[1] + my_advance_actions[2]
 
         # print(len(my_advance_actions))
-        top_5_actions = self.greedy_agent.SelectTopMove(my_advance_actions, game_state, 5)
+        top_5_actions = self.greedy_agent.SelectTopMove(moves, game_state, 5)
         # print(top_5_actions)
         for move in top_5_actions:
             move_score = self.MiniMax(move, game_state, depth, self.id)
@@ -191,17 +191,17 @@ class myPlayer(AdvancePlayer):
             #
             # if type_1_size / actions_size > 0.1:
 
-            actions_size = len(next_player_moves)
-            my_advance_actions = self.advance_get_available_actions(next_player_moves, next_state, self.id)
-            type_1_size = len(my_advance_actions[0])
-
-            if type_1_size > 0.1 * actions_size:
-                my_advance_actions = my_advance_actions[0]
-            else:
-                my_advance_actions = my_advance_actions[0] + my_advance_actions[1] + my_advance_actions[2]
+            # actions_size = len(next_player_moves)
+            # my_advance_actions = self.advance_get_available_actions(next_player_moves, next_state, self.id)
+            # type_1_size = len(my_advance_actions[0])
+            #
+            # if type_1_size > 0.1 * actions_size:
+            #     my_advance_actions = my_advance_actions[0]
+            # else:
+            #     my_advance_actions = my_advance_actions[0] + my_advance_actions[1] + my_advance_actions[2]
 
             # print(len(my_advance_actions))
-            top_5_actions = self.greedy_agent.SelectTopMove(my_advance_actions, next_state, 5)
+            top_5_actions = self.greedy_agent.SelectTopMove(next_player_moves, next_state, 5)
 
             best_score = float("-inf")
             for my_move in top_5_actions:
@@ -309,29 +309,6 @@ class myPlayer(AdvancePlayer):
         return final_score
 
 
-# class Pair:
-#     def __init__(self, k, v):
-#         self.k = k
-#         self.v = v
-#
-#     def __cmp__(self, other):
-#         if self.k < other.k:
-#             return -1
-#         elif self.k > other.k:
-#             return 1
-#         else:
-#             return 0
-#
-#     def __eq__(self, other):
-#         return self.k == other.k
-#
-#     def __gt__(self, other):
-#         return self.k > other.k
-#
-#     def __lt__(self, other):
-#         return self.k < other.k
-
-
 class PriorityQueue:
     """
     Implements a priority queue data structure. Each inserted item
@@ -350,8 +327,14 @@ class PriorityQueue:
         self.count += 1
 
     def pop(self):
-        (_, _, item) = heapq.heappop(self.heap)
+        (priority, _, item) = heapq.heappop(self.heap)
+        # print(priority, item)
         return item
+
+    def pop_priority_item(self):
+        (priority, _, item) = heapq.heappop(self.heap)
+        # print(priority, item)
+        return priority, item
 
     def isEmpty(self):
         return len(self.heap) == 0
@@ -391,27 +374,29 @@ class GreedyAgent(AdvancePlayer):
         return None
 
     def SelectTopMove(self, moves: [(Move, int, TileGrab)], game_state: GameState, n=5):
-        import heapq
-
         hq = PriorityQueue()
-        cur_min = float("-inf")
-
         # print("###########")
-
         for m in moves:
             # print("###########", m)
-            q_value = self.getQValue(game_state, m)
+            q_value = -1 * self.getQValue(game_state, m)
             # print("###########1", m)
             if hq.count < n:
                 hq.push(m, q_value)
             else:
-                hq.pop()
-                hq.push(m, q_value)
+                pq_min, item = hq.pop_priority_item()
+
+                if q_value > pq_min:
+                    print(pq_min, item)
+                    hq.push(m, q_value)
+                else:
+                    hq.push(item, pq_min)
             # print("###########2", m)
 
         result = []
+        # print("------- start ------")
         while not hq.isEmpty():
             result.append(hq.pop())
+        # print("------- end ------")
         return result
 
     # Each player is given 1 second to select next best move
