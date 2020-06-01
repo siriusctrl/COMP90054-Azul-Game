@@ -35,7 +35,7 @@ class myPlayer(AdvancePlayer):
         # we have an increasing focus on the bonus as the game goes
         self.turn += 1
         self.final_bonus_weight += 0.2
-        self.final_bonus_weight = min(self.bonus_weight, 1)
+        self.final_bonus_weight = min(self.final_bonus_weight, 1)
 
         # check all the moves at the start of the round
         self.is_my_first_move = True
@@ -74,11 +74,13 @@ class myPlayer(AdvancePlayer):
         depth = 0
 
         # possible move to add 1 grid, 2 grid and so on
-        # possible_fill = [0, 0, 0, 0, 0]
-        # for move in moves:
-        #     tile_grab = move[2]
-        #     if tile_grab.num_to_floor_line == 0:
-        #         possible_fill[tile_grab.num_to_pattern_line - 1] += 1
+        better_moves = []
+        possible_fill = [0, 0, 0, 0, 0]
+        for move in moves:
+            tile_grab = move[2]
+            # if there is no tile to floor line
+            if tile_grab.num_to_floor_line == 0:
+                possible_fill[tile_grab.num_to_pattern_line - 1] += 1
 
         for move in moves:
             move_score = self.MiniMax(move, game_state, depth, self.id)
@@ -143,7 +145,7 @@ class myPlayer(AdvancePlayer):
         # first turn 0.6, second turn 0.8 then 1
         bonus = my_state.EndOfGameScore()
         if self.turn <= self.TURN_IGNORE_FINAL_BONUS:
-            final_score += bonus * self.TURN_IGNORE_FINAL_BONUS
+            final_score += bonus * self.final_bonus_weight
         else:
             final_score += bonus
 
@@ -193,8 +195,9 @@ class myPlayer(AdvancePlayer):
             elif tile_colour == 2:
                 final_score += 0.00004
 
-        # # Feature 7: If there are some same tiles with same amount in the factory or in the center
-        # # we don't need to fill the current tile so hurry
+        # Feature 7: If there are some same tiles with same amount in the factory or in the center
+        # we don't need to fill the current tile so hurry
+        # However, it should be implemented at higher level, not here!!!
         # find_same = 0
         # for i in [0, 5]:
         #     if game_state.factories[0].tiles[tile_colour] == num_add_to_line:
@@ -205,7 +208,7 @@ class myPlayer(AdvancePlayer):
         #
         # if find_same >= 3:
         #     final_score -= 10
-        #
+
         # # Feature 8: give bonus to the pattern line that already have some tile
         # if tile_grab.pattern_line_dest != -1:
         #     final_score += line_n[tile_grab.pattern_line_dest] * 0.0001
