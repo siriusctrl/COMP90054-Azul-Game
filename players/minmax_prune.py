@@ -395,18 +395,13 @@ class GreedyAgent(AdvancePlayer):
         # print("###########")
         for m in moves:
             # print("###########", m)
-            q_value = -1 * self.getQValue(game_state, m)
+            q_value = 1 * self.getQValue(game_state, m)
             # print("###########1", m)
-            if hq.count < n:
-                hq.push(m, q_value)
-            else:
-                pq_min, item = hq.pop_priority_item()
 
-                if q_value > pq_min:
-                    # print(pq_min, item)
-                    hq.push(m, q_value)
-                else:
-                    hq.push(item, pq_min)
+            hq.push(m, q_value)
+
+            if hq.count > n:
+                hq.pop()
             # print("###########2", m)
 
         result = []
