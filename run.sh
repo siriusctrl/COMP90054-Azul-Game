@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
-FILE=StaffTeamEasy.myPlayer
+RED=minmax_prune
+BLUE=StaffTeamEasy.myPlayer
 
-python runner.py --redName=$FILE --blueName=minmax_prune -r $FILE -b minmax_prune_3 -w 2 -m 100 -q
+python runner.py --redName=$RED --blueName=$BLUE -r $RED -b $BLUE -w 1 -m 15 -q

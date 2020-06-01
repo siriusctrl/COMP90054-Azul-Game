@@ -26,8 +26,6 @@
   <component name="ChangeListManager">
     <list default="true" id="0a66df85-4b3c-4c1b-8c2c-68479495e361" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/advance_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/advance_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/players/minmax_prune_2.py" beforeDir="false" afterPath="$PROJECT_DIR$/players/minmax_prune_2.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/run.sh" beforeDir="false" afterPath="$PROJECT_DIR$/run.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
