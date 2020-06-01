@@ -53,7 +53,7 @@ python runner.py
 
 A standard example to run the code would be:
 ```bash
-python runner.py -r naive_player -b StaffTeamEasy.myPlayer --blueName='872427' -q -m 10
+python runner.py -r compare.myPlayer -b StaffTeamEasy.myPlayer --blueName='872427' -q -m 10
 ```
 
 Other command line option can be viewed with argument: ```-h``` or ```--help```

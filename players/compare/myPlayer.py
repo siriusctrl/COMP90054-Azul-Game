@@ -4,7 +4,7 @@ sys.path.append("players/StaffTeamEasy")
 
 from advance_model import *
 from collections import Counter
-from copy import deepcopy
+from copy import deepcopy, copy
 
 
 def seeTile(tile_grab: TileGrab):
@@ -17,56 +17,44 @@ def seeTile(tile_grab: TileGrab):
 
 
 class myPlayer(AdvancePlayer):
+    IGNORE_BONUS_THRESHOLD = 3
+
     # initialize
     # The following function should not be changed at all
     def __init__(self, _id):
         super().__init__(_id)
-        self.id = _id
-        self.weights = [1]
-        # decay for Q value
-        self.discount = 0.9
-        # learning rate for the Q value
-        self.alpha = 0.2
-        # exploration and exploitation rule for epsilon greedy
-        self.epsilon = 1
-        self.other_available = None
+        self.weights = [1, -0.4, 0.015, 0.01]
+        self.curr_round = -1
 
     # Each player is given 5 seconds when a new round started
     # If exceeds 5 seconds, all your code will be terminated and
     # you will receive a timeout warning
     def StartRound(self, game_state: GameState):
+        self.curr_round += 1
+        print("---------- round", self.curr_round, "start ------------")
         return None
 
     # Each player is given 1 second to select next best move
-    # If exceeds 5 seconds, all your code will be terminated, 
-    # a random action will be selected, and you will receive 
+    # If exceeds 5 seconds, all your code will be terminated,
+    # a random action will be selected, and you will receive
     # a timeout warning
     def SelectMove(self, moves: [(Move, int, TileGrab)], game_state: GameState):
         # move[1] is factory ID that illustrate the source of tile, -1 for center
-        move_collection = dict()
-
-        # # FIXME this will timeout, think another way to consider opponent action
-        # for p in game_state.players:
-        #     if p.id != self.id:
-        #         self.other_available = p.GetAvailableMoves()
-
-        for m in moves:
-            move_collection[m] = self.getQValue(game_state, m)
-
         # find the action with highest Q value
         maxQ = float("-inf")
         curr_max = None
-        for key in move_collection.keys():
-            if move_collection[key] > maxQ:
-                curr_max = key
-                maxQ = move_collection[key]
 
-        # print(maxQ)
-        # if self.flipCoin():
-        #     return curr_max
-        # else:
-        #     return random.choice(moves)
+        for m in moves:
+            q_value = self.getQValue(game_state, m)
+            if q_value > maxQ:
+                maxQ = q_value
+                curr_max = m
 
+        ns = self.getNextState(game_state, curr_max)
+
+        print("   ", self.id, ":", self.featureExtractor(game_state, curr_max))
+        print("   ", "this:", self.expectScore(game_state), " that:", self.expectScore(ns))
+        print("")
         return curr_max
 
     def getQValue(self, game_state: GameState, action) -> float:
@@ -97,18 +85,50 @@ class myPlayer(AdvancePlayer):
         :return a dictionary that contains the value we want to use in this game
         """
         features = []
+        # TODO: As now next state won't be used for any other purpose, to save time, no deepcopy
         next_state = self.getNextState(game_state, move)
+        expect_gain = self.expectGain(game_state, next_state)
 
         # expected score for the current action exec
-        features.append(self.expectGain(game_state, next_state))
+        if self.curr_round < myPlayer.IGNORE_BONUS_THRESHOLD:
+
+            # TODO: examine this field
+            # suppose 90% of game end in 5 rounds
+            if move[0] == Move.TAKE_FROM_CENTRE and not game_state.first_player_taken and \
+                    self.curr_round < 4:
+                # get first player token
+                expect_gain += 1
+
+            # only ignore the positive mark
+            if expect_gain > 0:
+                expect_gain *= 0.1
+
+            features.append(expect_gain)
+        else:
+            features.append(expect_gain)
 
         # penalise add only a few grad to a long pattern
-        # tile_grab: TileGrab = move[-1]
-        # line_n = game_state.players[self.id].lines_number
-        # # total capacity - tile already have - # we going to add
-        # remains = (tile_grab.pattern_line_dest + 1) - line_n[tile_grab.pattern_line_dest] \
-        #           - tile_grab.num_to_pattern_line
-        # features.append(remains)
+        tile_grab: TileGrab = move[-1]
+        line_n = game_state.players[self.id].lines_number
+
+        if tile_grab.pattern_line_dest != -1:
+            if line_n[tile_grab.pattern_line_dest] == 0:
+                # total capacity - tile already have - # we going to add
+                remains = (tile_grab.pattern_line_dest + 1) - tile_grab.num_to_pattern_line
+                features.append(remains)
+            else:
+                features.append(0)
+        else:
+            features.append(0)
+
+        # give a slightly higher point to collect more
+        features.append(move[-1].num_to_pattern_line)
+
+        # give bonus to the pattern line that already have some tile
+        if tile_grab.pattern_line_dest != -1:
+            features.append(line_n[tile_grab.pattern_line_dest])
+        else:
+            features.append(0)
 
         return features
 
@@ -119,7 +139,8 @@ class myPlayer(AdvancePlayer):
         return next_state
 
     def expectGain(self, curr_state, next_state):
-        curr_expected_score, curr_bonus = self.expectScore(curr_state)
+        copy_curr = deepcopy(curr_state)
+        curr_expected_score, curr_bonus = self.expectScore(copy_curr)
         next_expected_score, next_bonus = self.expectScore(next_state)
 
         return next_expected_score + next_bonus - curr_expected_score - curr_bonus
@@ -134,5 +155,5 @@ class myPlayer(AdvancePlayer):
         bonus = my_state.EndOfGameScore()
         return expected_score, bonus
 
-    def flipCoin(self) -> bool:
-        return True if random.random() < self.epsilon else False
+    def copy_player(self, player_state: PlayerState) -> PlayerState:
+        pass
