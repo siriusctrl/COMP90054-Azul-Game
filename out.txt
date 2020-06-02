@@ -1,0 +1,1004 @@
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  2
+time elapsed: 0.7993025779724121
+n_ter: 1054
+branching factor:  7
+time elapsed: 0.7705726623535156
+n_ter: 641
+branching factor:  1
+time elapsed: 0.7998342514038086
+n_ter: 774
+branching factor:  6
+time elapsed: 0.7583684921264648
+n_ter: 442
+branching factor:  1
+time elapsed: 0.7995243072509766
+n_ter: 612
+branching factor:  5
+time elapsed: 0.7717392444610596
+n_ter: 7274
+branching factor:  2
+time elapsed: 0.7985827922821045
+n_ter: 474
+Result of game (1/50): Player naive_player earned 28.0 points; Player StaffTeamEasy.myPlayer earned 57.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  7
+time elapsed: 0.7832252979278564
+n_ter: 7499
+branching factor:  7
+time elapsed: 0.7640266418457031
+n_ter: 619
+branching factor:  2
+time elapsed: 0.7987549304962158
+n_ter: 735
+branching factor:  4
+time elapsed: 0.7749881744384766
+n_ter: 567
+branching factor:  1
+time elapsed: 0.799156665802002
+n_ter: 594
+branching factor:  4
+time elapsed: 0.7785546779632568
+n_ter: 7447
+branching factor:  6
+time elapsed: 0.7359542846679688
+n_ter: 321
+branching factor:  2
+time elapsed: 0.7960963249206543
+n_ter: 454
+Result of game (2/50): Player naive_player earned 45.0 points; Player StaffTeamEasy.myPlayer earned 61.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  6
+time elapsed: 0.7919166088104248
+n_ter: 9552
+branching factor:  4
+time elapsed: 0.792917013168335
+n_ter: 10003
+branching factor:  5
+time elapsed: 0.7870132923126221
+n_ter: 8458
+branching factor:  3
+time elapsed: 0.7969191074371338
+n_ter: 458
+branching factor:  4
+time elapsed: 0.7821834087371826
+n_ter: 6872
+Result of game (3/50): Player naive_player earned 26.0 points; Player StaffTeamEasy.myPlayer earned 69.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  7
+time elapsed: 0.7779946327209473
+n_ter: 696
+branching factor:  2
+time elapsed: 0.7981448173522949
+n_ter: 847
+branching factor:  4
+time elapsed: 0.7860367298126221
+n_ter: 8620
+branching factor:  6
+time elapsed: 0.7581079006195068
+n_ter: 427
+branching factor:  2
+time elapsed: 0.7989203929901123
+n_ter: 561
+branching factor:  3
+time elapsed: 0.7945804595947266
+n_ter: 473
+branching factor:  5
+time elapsed: 0.7831275463104248
+n_ter: 7568
+Result of game (4/50): Player naive_player earned 40.0 points; Player StaffTeamEasy.myPlayer earned 58.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  5
+time elapsed: 0.7846143245697021
+n_ter: 8660
+branching factor:  4
+time elapsed: 0.7869277000427246
+n_ter: 8557
+branching factor:  7
+time elapsed: 0.7676200866699219
+n_ter: 509
+branching factor:  1
+time elapsed: 0.7998964786529541
+n_ter: 592
+branching factor:  5
+time elapsed: 0.7696974277496338
+n_ter: 428
+branching factor:  1
+time elapsed: 0.7985045909881592
+n_ter: 480
+branching factor:  6
+time elapsed: 0.7646558284759521
+n_ter: 6560
+Result of game (5/50): Player naive_player earned 34.0 points; Player StaffTeamEasy.myPlayer earned 34.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  4
+time elapsed: 0.7938766479492188
+n_ter: 9189
+branching factor:  2
+time elapsed: 0.7984888553619385
+n_ter: 777
+branching factor:  3
+time elapsed: 0.7979011535644531
+n_ter: 557
+branching factor:  7
+time elapsed: 0.802891731262207
+n_ter: 0
+branching factor:  3
+time elapsed: 0.7900097370147705
+n_ter: 7677
+branching factor:  4
+time elapsed: 0.7749125957489014
+n_ter: 373
+branching factor:  2
+time elapsed: 0.7974119186401367
+n_ter: 422
+Result of game (6/50): Player naive_player earned 13.0 points; Player StaffTeamEasy.myPlayer earned 37.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  5
+time elapsed: 0.7874722480773926
+n_ter: 7856
+branching factor:  3
+time elapsed: 0.7975361347198486
+n_ter: 750
+branching factor:  4
+time elapsed: 0.7887477874755859
+n_ter: 8529
+branching factor:  3
+time elapsed: 0.7971363067626953
+n_ter: 509
+branching factor:  6
+time elapsed: 0.7783920764923096
+n_ter: 7241
+Result of game (7/50): Player naive_player earned 53.0 points; Player StaffTeamEasy.myPlayer earned 68.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  3
+time elapsed: 0.7981979846954346
+n_ter: 960
+branching factor:  3
+time elapsed: 0.7979040145874023
+n_ter: 791
+branching factor:  3
+time elapsed: 0.7965855598449707
+n_ter: 613
+branching factor:  2
+time elapsed: 0.7988557815551758
+n_ter: 494
+branching factor:  4
+time elapsed: 0.7875628471374512
+n_ter: 7658
+Result of game (8/50): Player naive_player earned 34.0 points; Player StaffTeamEasy.myPlayer earned 61.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  3
+time elapsed: 0.7984476089477539
+n_ter: 1050
+branching factor:  6
+time elapsed: 0.7855513095855713
+n_ter: 8537
+branching factor:  5
+time elapsed: 0.7839181423187256
+n_ter: 8350
+branching factor:  6
+time elapsed: 0.779733419418335
+n_ter: 7932
+branching factor:  4
+time elapsed: 0.7934255599975586
+n_ter: 404
+Result of game (9/50): Player naive_player earned 30.0 points; Player StaffTeamEasy.myPlayer earned 53.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  3
+time elapsed: 0.7993917465209961
+n_ter: 964
+branching factor:  2
+time elapsed: 0.7988443374633789
+n_ter: 745
+branching factor:  6
+time elapsed: 0.7710576057434082
+n_ter: 519
+branching factor:  2
+time elapsed: 0.7978613376617432
+n_ter: 618
+branching factor:  5
+time elapsed: 0.7492508888244629
+n_ter: 5608
+branching factor:  4
+time elapsed: 0.7782599925994873
+n_ter: 6818
+Result of game (10/50): Player naive_player earned 41.0 points; Player StaffTeamEasy.myPlayer earned 51.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  2
+time elapsed: 0.798375129699707
+n_ter: 921
+branching factor:  7
+time elapsed: 0.7731430530548096
+n_ter: 501
+branching factor:  2
+time elapsed: 0.7998778820037842
+n_ter: 751
+branching factor:  5
+time elapsed: 0.7870774269104004
+n_ter: 8434
+branching factor:  5
+time elapsed: 0.7697007656097412
+n_ter: 404
+branching factor:  1
+time elapsed: 0.7988705635070801
+n_ter: 495
+branching factor:  4
+time elapsed: 0.7845442295074463
+n_ter: 7012
+Result of game (11/50): Player naive_player earned 14.0 points; Player StaffTeamEasy.myPlayer earned 60.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  6
+time elapsed: 0.789982795715332
+n_ter: 8483
+branching factor:  5
+time elapsed: 0.7897231578826904
+n_ter: 8331
+branching factor:  1
+time elapsed: 0.7988924980163574
+n_ter: 483
+branching factor:  5
+time elapsed: 0.7849025726318359
+n_ter: 6293
+branching factor:  3
+time elapsed: 0.7839281558990479
+n_ter: 6583
+Result of game (12/50): Player naive_player earned 44.0 points; Player StaffTeamEasy.myPlayer earned 61.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  7
+time elapsed: 0.7844443321228027
+n_ter: 8046
+branching factor:  2
+time elapsed: 0.7990319728851318
+n_ter: 628
+branching factor:  7
+time elapsed: 0.7695152759552002
+n_ter: 504
+branching factor:  2
+time elapsed: 0.7985970973968506
+n_ter: 544
+branching factor:  5
+time elapsed: 0.7699410915374756
+n_ter: 431
+branching factor:  2
+time elapsed: 0.7989211082458496
+n_ter: 495
+branching factor:  5
+time elapsed: 0.7790641784667969
+n_ter: 7236
+Result of game (13/50): Player naive_player earned 32.0 points; Player StaffTeamEasy.myPlayer earned 67.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  6
+time elapsed: 0.7819104194641113
+n_ter: 673
+branching factor:  1
+time elapsed: 0.7984189987182617
+n_ter: 686
+branching factor:  5
+time elapsed: 0.7869815826416016
+n_ter: 8760
+branching factor:  7
+time elapsed: 0.7483847141265869
+n_ter: 362
+branching factor:  2
+time elapsed: 0.7989253997802734
+n_ter: 470
+branching factor:  5
+time elapsed: 0.7807142734527588
+n_ter: 7830
+Result of game (14/50): Player naive_player earned 16.0 points; Player StaffTeamEasy.myPlayer earned 51.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  3
+time elapsed: 0.7985084056854248
+n_ter: 1030
+branching factor:  2
+time elapsed: 0.79872727394104
+n_ter: 806
+branching factor:  3
+time elapsed: 0.790057897567749
+n_ter: 8610
+branching factor:  4
+time elapsed: 0.7809090614318848
+n_ter: 8198
+branching factor:  2
+time elapsed: 0.7979433536529541
+n_ter: 475
+Result of game (15/50): Player naive_player earned 39.0 points; Player StaffTeamEasy.myPlayer earned 60.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  6
+time elapsed: 0.7853453159332275
+n_ter: 8361
+branching factor:  6
+time elapsed: 0.7875218391418457
+n_ter: 9038
+branching factor:  3
+time elapsed: 0.7970545291900635
+n_ter: 618
+branching factor:  5
+time elapsed: 0.7807638645172119
+n_ter: 7679
+branching factor:  6
+time elapsed: 0.778099775314331
+n_ter: 6954
+Result of game (16/50): Player naive_player earned 4.0 points; Player StaffTeamEasy.myPlayer earned 62.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  3
+time elapsed: 0.7988691329956055
+n_ter: 973
+branching factor:  2
+time elapsed: 0.7978253364562988
+n_ter: 644
+branching factor:  3
+time elapsed: 0.7915248870849609
+n_ter: 6662
+branching factor:  1
+time elapsed: 0.7984716892242432
+n_ter: 435
+branching factor:  5
+time elapsed: 0.7700009346008301
+n_ter: 396
+branching factor:  1
+time elapsed: 0.7988612651824951
+n_ter: 423
+Result of game (17/50): Player naive_player earned 36.0 points; Player StaffTeamEasy.myPlayer earned 77.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  3
+time elapsed: 0.7978975772857666
+n_ter: 726
+branching factor:  5
+time elapsed: 0.7815513610839844
+n_ter: 7641
+branching factor:  2
+time elapsed: 0.7967798709869385
+n_ter: 516
+branching factor:  5
+time elapsed: 0.7609903812408447
+n_ter: 355
+branching factor:  1
+time elapsed: 0.7998912334442139
+n_ter: 471
+Result of game (18/50): Player naive_player earned 67.0 points; Player StaffTeamEasy.myPlayer earned 61.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  7
+time elapsed: 0.7866950035095215
+n_ter: 8169
+branching factor:  4
+time elapsed: 0.7909200191497803
+n_ter: 8363
+branching factor:  3
+time elapsed: 0.7977731227874756
+n_ter: 603
+branching factor:  6
+time elapsed: 0.7667503356933594
+n_ter: 417
+branching factor:  2
+time elapsed: 0.7988626956939697
+n_ter: 470
+branching factor:  4
+time elapsed: 0.7844152450561523
+n_ter: 6933
+Result of game (19/50): Player naive_player earned 64.0 points; Player StaffTeamEasy.myPlayer earned 60.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  6
+time elapsed: 0.7899134159088135
+n_ter: 8743
+branching factor:  3
+time elapsed: 0.7959058284759521
+n_ter: 10070
+branching factor:  3
+time elapsed: 0.7976186275482178
+n_ter: 594
+branching factor:  5
+time elapsed: 0.7776546478271484
+n_ter: 7789
+branching factor:  6
+time elapsed: 0.776463508605957
+n_ter: 6983
+Result of game (20/50): Player naive_player earned 22.0 points; Player StaffTeamEasy.myPlayer earned 74.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  6
+time elapsed: 0.7871885299682617
+n_ter: 8137
+branching factor:  6
+time elapsed: 0.7829606533050537
+n_ter: 8062
+branching factor:  3
+time elapsed: 0.7946128845214844
+n_ter: 560
+branching factor:  1
+time elapsed: 0.7982749938964844
+n_ter: 520
+branching factor:  6
+time elapsed: 0.7617330551147461
+n_ter: 342
+branching factor:  2
+time elapsed: 0.7969024181365967
+n_ter: 443
+Result of game (21/50): Player naive_player earned 43.0 points; Player StaffTeamEasy.myPlayer earned 44.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  3
+time elapsed: 0.7981634140014648
+n_ter: 962
+branching factor:  5
+time elapsed: 0.7841556072235107
+n_ter: 8447
+branching factor:  2
+time elapsed: 0.7936139106750488
+n_ter: 10005
+branching factor:  5
+time elapsed: 0.7834727764129639
+n_ter: 7498
+branching factor:  2
+time elapsed: 0.7980294227600098
+n_ter: 409
+Result of game (22/50): Player naive_player earned 55.0 points; Player StaffTeamEasy.myPlayer earned 43.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  5
+time elapsed: 0.7864727973937988
+n_ter: 7861
+branching factor:  5
+time elapsed: 0.7919087409973145
+n_ter: 8563
+branching factor:  7
+time elapsed: 0.7645378112792969
+n_ter: 347
+branching factor:  1
+time elapsed: 0.7989499568939209
+n_ter: 615
+branching factor:  2
+time elapsed: 0.798842191696167
+n_ter: 520
+branching factor:  6
+time elapsed: 0.7826628684997559
+n_ter: 7636
+Result of game (23/50): Player naive_player earned 35.0 points; Player StaffTeamEasy.myPlayer earned 78.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  4
+time elapsed: 0.7987327575683594
+n_ter: 1002
+branching factor:  3
+time elapsed: 0.7982633113861084
+n_ter: 795
+branching factor:  3
+time elapsed: 0.7979042530059814
+n_ter: 624
+branching factor:  7
+time elapsed: 0.73476243019104
+n_ter: 354
+branching factor:  1
+time elapsed: 0.8006820678710938
+n_ter: 520
+branching factor:  6
+time elapsed: 0.7779674530029297
+n_ter: 6862
+Result of game (24/50): Player naive_player earned 39.0 points; Player StaffTeamEasy.myPlayer earned 58.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  6
+time elapsed: 0.7878925800323486
+n_ter: 8436
+branching factor:  4
+time elapsed: 0.7928040027618408
+n_ter: 9385
+branching factor:  4
+time elapsed: 0.787895917892456
+n_ter: 7881
+branching factor:  4
+time elapsed: 0.7859020233154297
+n_ter: 8033
+branching factor:  3
+time elapsed: 0.7958502769470215
+n_ter: 415
+Result of game (25/50): Player naive_player earned 42.0 points; Player StaffTeamEasy.myPlayer earned 62.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  2
+time elapsed: 0.7990574836730957
+n_ter: 1022
+branching factor:  6
+time elapsed: 0.7619268894195557
+n_ter: 603
+branching factor:  2
+time elapsed: 0.7989475727081299
+n_ter: 788
+branching factor:  5
+time elapsed: 0.7867186069488525
+n_ter: 7363
+branching factor:  4
+time elapsed: 0.7869055271148682
+n_ter: 7308
+branching factor:  5
+time elapsed: 0.7809302806854248
+n_ter: 6953
+Result of game (26/50): Player naive_player earned 29.0 points; Player StaffTeamEasy.myPlayer earned 37.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  2
+time elapsed: 0.7998721599578857
+n_ter: 949
+branching factor:  4
+time elapsed: 0.7918486595153809
+n_ter: 8108
+branching factor:  6
+time elapsed: 0.770963191986084
+n_ter: 462
+branching factor:  1
+time elapsed: 0.7993791103363037
+n_ter: 533
+branching factor:  7
+time elapsed: 0.7699410915374756
+n_ter: 6001
+branching factor:  7
+time elapsed: 0.7586636543273926
+n_ter: 305
+branching factor:  1
+time elapsed: 0.8008263111114502
+n_ter: 414
+Result of game (27/50): Player naive_player earned 44.0 points; Player StaffTeamEasy.myPlayer earned 42.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  6
+time elapsed: 0.7868449687957764
+n_ter: 7859
+branching factor:  7
+time elapsed: 0.787891149520874
+n_ter: 8295
+branching factor:  2
+time elapsed: 0.7993068695068359
+n_ter: 553
+branching factor:  4
+time elapsed: 0.7904484272003174
+n_ter: 7538
+branching factor:  5
+time elapsed: 0.7839350700378418
+n_ter: 7122
+Result of game (28/50): Player naive_player earned 44.0 points; Player StaffTeamEasy.myPlayer earned 62.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  3
+time elapsed: 0.7988615036010742
+n_ter: 1015
+branching factor:  5
+time elapsed: 0.7874844074249268
+n_ter: 8789
+branching factor:  4
+time elapsed: 0.7875950336456299
+n_ter: 8553
+branching factor:  3
+time elapsed: 0.7963879108428955
+n_ter: 517
+branching factor:  7
+time elapsed: 0.7326681613922119
+n_ter: 308
+branching factor:  2
+time elapsed: 0.7992219924926758
+n_ter: 373
+Result of game (29/50): Player naive_player earned 31.0 points; Player StaffTeamEasy.myPlayer earned 52.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  2
+time elapsed: 0.7982542514801025
+n_ter: 767
+branching factor:  3
+time elapsed: 0.7914071083068848
+n_ter: 8793
+branching factor:  5
+time elapsed: 0.7624804973602295
+n_ter: 404
+branching factor:  2
+time elapsed: 0.7979304790496826
+n_ter: 514
+branching factor:  4
+time elapsed: 0.7941129207611084
+n_ter: 401
+Result of game (30/50): Player naive_player earned 27.0 points; Player StaffTeamEasy.myPlayer earned 49.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  3
+time elapsed: 0.7974309921264648
+n_ter: 1004
+branching factor:  3
+time elapsed: 0.7984476089477539
+n_ter: 738
+branching factor:  2
+time elapsed: 0.793900728225708
+n_ter: 9026
+branching factor:  4
+time elapsed: 0.782681941986084
+n_ter: 6899
+branching factor:  5
+time elapsed: 0.7639608383178711
+n_ter: 307
+branching factor:  1
+time elapsed: 0.7985947132110596
+n_ter: 396
+Result of game (31/50): Player naive_player earned 57.0 points; Player StaffTeamEasy.myPlayer earned 56.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  5
+time elapsed: 0.7888200283050537
+n_ter: 8117
+branching factor:  3
+time elapsed: 0.792248010635376
+n_ter: 8761
+branching factor:  2
+time elapsed: 0.7932276725769043
+n_ter: 8635
+branching factor:  2
+time elapsed: 0.797473669052124
+n_ter: 475
+branching factor:  4
+time elapsed: 0.7779324054718018
+n_ter: 7087
+Result of game (32/50): Player naive_player earned 37.0 points; Player StaffTeamEasy.myPlayer earned 51.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  3
+time elapsed: 0.7988650798797607
+n_ter: 878
+branching factor:  2
+time elapsed: 0.7974178791046143
+n_ter: 674
+branching factor:  4
+time elapsed: 0.7846291065216064
+n_ter: 8461
+branching factor:  4
+time elapsed: 0.7862305641174316
+n_ter: 8602
+branching factor:  4
+time elapsed: 0.7809250354766846
+n_ter: 7150
+Result of game (33/50): Player naive_player earned 17.0 points; Player StaffTeamEasy.myPlayer earned 61.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  7
+time elapsed: 0.7814662456512451
+n_ter: 6965
+branching factor:  5
+time elapsed: 0.7887704372406006
+n_ter: 7772
+branching factor:  7
+time elapsed: 0.7529537677764893
+n_ter: 386
+branching factor:  2
+time elapsed: 0.7980108261108398
+n_ter: 565
+branching factor:  2
+time elapsed: 0.7983474731445312
+n_ter: 463
+branching factor:  7
+time elapsed: 0.7371578216552734
+n_ter: 312
+branching factor:  1
+time elapsed: 0.7998123168945312
+n_ter: 378
+Result of game (34/50): Player naive_player earned 50.0 points; Player StaffTeamEasy.myPlayer earned 69.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  7
+time elapsed: 0.7848982810974121
+n_ter: 7743
+branching factor:  2
+time elapsed: 0.7991805076599121
+n_ter: 720
+branching factor:  5
+time elapsed: 0.779064416885376
+n_ter: 510
+branching factor:  1
+time elapsed: 0.7999083995819092
+n_ter: 566
+branching factor:  4
+time elapsed: 0.7898564338684082
+n_ter: 8044
+branching factor:  6
+time elapsed: 0.7623276710510254
+n_ter: 334
+branching factor:  1
+time elapsed: 0.7993719577789307
+n_ter: 394
+Result of game (35/50): Player naive_player earned 44.0 points; Player StaffTeamEasy.myPlayer earned 47.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  7
+time elapsed: 0.7794218063354492
+n_ter: 6853
+branching factor:  5
+time elapsed: 0.7875339984893799
+n_ter: 8384
+branching factor:  6
+time elapsed: 0.7610793113708496
+n_ter: 466
+branching factor:  1
+time elapsed: 0.7999660968780518
+n_ter: 563
+branching factor:  5
+time elapsed: 0.7776763439178467
+n_ter: 6946
+Result of game (36/50): Player naive_player earned 25.0 points; Player StaffTeamEasy.myPlayer earned 31.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  5
+time elapsed: 0.7889564037322998
+n_ter: 8098
+branching factor:  7
+time elapsed: 0.7689287662506104
+n_ter: 646
+branching factor:  1
+time elapsed: 0.8009147644042969
+n_ter: 803
+branching factor:  7
+time elapsed: 0.7655079364776611
+n_ter: 512
+branching factor:  2
+time elapsed: 0.7989616394042969
+n_ter: 608
+branching factor:  4
+time elapsed: 0.778620719909668
+n_ter: 6958
+branching factor:  3
+time elapsed: 0.7862339019775391
+n_ter: 7197
+Result of game (37/50): Player naive_player earned 18.0 points; Player StaffTeamEasy.myPlayer earned 58.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  3
+time elapsed: 0.799616813659668
+n_ter: 989
+branching factor:  2
+time elapsed: 0.7982766628265381
+n_ter: 761
+branching factor:  6
+time elapsed: 0.7739083766937256
+n_ter: 514
+branching factor:  2
+time elapsed: 0.7998733520507812
+n_ter: 577
+branching factor:  5
+time elapsed: 0.7797350883483887
+n_ter: 6897
+branching factor:  6
+time elapsed: 0.7390477657318115
+n_ter: 283
+branching factor:  2
+time elapsed: 0.7983794212341309
+n_ter: 434
+Result of game (38/50): Player naive_player earned 47.0 points; Player StaffTeamEasy.myPlayer earned 54.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  5
+time elapsed: 0.7854855060577393
+n_ter: 7878
+branching factor:  6
+time elapsed: 0.7745523452758789
+n_ter: 571
+branching factor:  3
+time elapsed: 0.7963852882385254
+n_ter: 653
+branching factor:  4
+time elapsed: 0.7786450386047363
+n_ter: 7516
+branching factor:  6
+time elapsed: 0.763601541519165
+n_ter: 387
+branching factor:  2
+time elapsed: 0.7964363098144531
+n_ter: 499
+branching factor:  6
+time elapsed: 0.7658505439758301
+n_ter: 374
+branching factor:  2
+time elapsed: 0.7977137565612793
+n_ter: 435
+Result of game (39/50): Player naive_player earned 27.0 points; Player StaffTeamEasy.myPlayer earned 53.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  3
+time elapsed: 0.7985281944274902
+n_ter: 1023
+branching factor:  3
+time elapsed: 0.7935507297515869
+n_ter: 10155
+branching factor:  7
+time elapsed: 0.7611045837402344
+n_ter: 490
+branching factor:  2
+time elapsed: 0.798431396484375
+n_ter: 637
+branching factor:  3
+time elapsed: 0.7937009334564209
+n_ter: 8832
+branching factor:  4
+time elapsed: 0.7807681560516357
+n_ter: 7476
+Result of game (40/50): Player naive_player earned 17.0 points; Player StaffTeamEasy.myPlayer earned 43.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  7
+time elapsed: 0.7889621257781982
+n_ter: 8817
+branching factor:  2
+time elapsed: 0.7990963459014893
+n_ter: 761
+branching factor:  5
+time elapsed: 0.7680177688598633
+n_ter: 502
+branching factor:  2
+time elapsed: 0.7984166145324707
+n_ter: 616
+branching factor:  3
+time elapsed: 0.7898621559143066
+n_ter: 8817
+branching factor:  6
+time elapsed: 0.7546384334564209
+n_ter: 336
+branching factor:  2
+time elapsed: 0.797184944152832
+n_ter: 461
+Result of game (41/50): Player naive_player earned 36.0 points; Player StaffTeamEasy.myPlayer earned 56.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  3
+time elapsed: 0.7980284690856934
+n_ter: 1095
+branching factor:  2
+time elapsed: 0.79939866065979
+n_ter: 799
+branching factor:  2
+time elapsed: 0.7997605800628662
+n_ter: 633
+branching factor:  4
+time elapsed: 0.7853007316589355
+n_ter: 8770
+branching factor:  4
+time elapsed: 0.7845797538757324
+n_ter: 8042
+Result of game (42/50): Player naive_player earned 26.0 points; Player StaffTeamEasy.myPlayer earned 60.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  4
+time elapsed: 0.791074275970459
+n_ter: 8930
+branching factor:  1
+time elapsed: 0.7995986938476562
+n_ter: 819
+branching factor:  7
+time elapsed: 0.770789623260498
+n_ter: 530
+branching factor:  2
+time elapsed: 0.7989180088043213
+n_ter: 647
+branching factor:  5
+time elapsed: 0.7786197662353516
+n_ter: 7093
+branching factor:  3
+time elapsed: 0.7968354225158691
+n_ter: 476
+Result of game (43/50): Player naive_player earned 28.0 points; Player StaffTeamEasy.myPlayer earned 65.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  3
+time elapsed: 0.7993273735046387
+n_ter: 1066
+branching factor:  2
+time elapsed: 0.7989969253540039
+n_ter: 769
+branching factor:  7
+time elapsed: 0.7729039192199707
+n_ter: 464
+branching factor:  2
+time elapsed: 0.7989253997802734
+n_ter: 615
+branching factor:  7
+time elapsed: 0.7789211273193359
+n_ter: 7345
+branching factor:  4
+time elapsed: 0.7923641204833984
+n_ter: 447
+Result of game (44/50): Player naive_player earned 46.0 points; Player StaffTeamEasy.myPlayer earned 37.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  4
+time elapsed: 0.7978756427764893
+n_ter: 1022
+branching factor:  6
+time elapsed: 0.7879486083984375
+n_ter: 7500
+branching factor:  2
+time elapsed: 0.7990186214447021
+n_ter: 629
+branching factor:  7
+time elapsed: 0.7591197490692139
+n_ter: 374
+branching factor:  3
+time elapsed: 0.7965104579925537
+n_ter: 480
+branching factor:  7
+time elapsed: 0.746941089630127
+n_ter: 0
+branching factor:  2
+time elapsed: 0.7937808036804199
+n_ter: 7936
+Result of game (45/50): Player naive_player earned 21.0 points; Player StaffTeamEasy.myPlayer earned 48.0 points
+
+Player 0 team naive_player agent players.naive_player loaded
+Player 1 team StaffTeamEasy.myPlayer agent players.StaffTeamEasy.myPlayer loaded
+branching factor:  7
+time elapsed: 0.7853281497955322
+n_ter: 7617
+branching factor:  3
+time elapsed: 0.79842209815979
+n_ter: 711
+branching factor:  3
+time elapsed: 0.797494649887085
+n_ter: 635
+branching factor:  3
+time elapsed: 0.7964811325073242
+n_ter: 495

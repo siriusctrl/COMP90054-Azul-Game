@@ -2,27 +2,18 @@
 Author:      XuLin Yang
 Student id:  904904
 Description: monte carlo tree search agent
-             modify from https://www.moderndescartes.com/essays/deep_dive_mcts/
 """
-import itertools
+import heapq
 import sys
 from copy import deepcopy
 
 sys.path.append("players/StaffTeamEasy")
-import os
 
 from advance_model import *
-import json
 from math import sqrt, log
 
-from players.StaffTeamEasy.environment import OpponentNode, OpponentPolicy, simulation, score_reward, random_simulation_policy, delta_score_reward
+from players.StaffTeamEasy.environment import OpponentPolicy, simulation, random_simulation_policy, delta_score_reward
 from players.StaffTeamEasy.util import get_opponent_player_id, getNextState
-
-N_ITER = "n_iter"
-CP = "Cp"
-N_DEPTH = "n_depth"
-GAMMA = "gamma"
-
 
 class UCTNode:
     def __init__(self, game_state: GameState, player_id, opponent_id, policy: OpponentPolicy,
@@ -38,22 +29,11 @@ class UCTNode:
         self.parent_opponent_action = parent_opponent_action
 
         self.actions = moves
-        # self.action_next_state = {}  # {move: opponent's game_state}
-        # self.opponent_actions = {}   # {move: [opponent move]}
-        # self.children = {}           # {(move, opponent move): UCTNode}
         self.action_children = {}    # {move: [UCTNode]}
-        # update all nodes in children and opponent_nodes
-        # for action in self.actions:
-        #     opponent_node = OpponentNode(self.getNextState(self.game_state, action, self.player_id), self.policy, self.player_id, self.opponent_id)
-        #     self.opponent_nodes[action] = opponent_node
-        #     self.children[action] = [UCTNode(s, self.player_id, self.opponent_id, self.policy, action, self) for s in opponent_node.get_next_states()]
 
         # self.prior = prior  # float
         self.total_value = 0  # float
         self.number_visits = 0  # int
-
-        # used mcts with bellman equation back propagation
-        self.vs = 0
 
     def initialize(self):
         for action in self.get_actions():
@@ -83,28 +63,6 @@ class UCTNode:
         return self.actions
 
     # ************************** step 1: selection *************************************************************************************
-
-    def q_value(self, action):
-        """
-        :return: float, q_value = avg_reward = total_reward / visit_count
-        """
-        print("q_value")
-        result = self.total_value / (1 + self.number_visits)  # add 1 to avoid zero division
-        print(result)
-        # TODO check my calculation
-        return result
-
-    def u_value(self, agent):
-        print("u_value")
-        # TODO check my calculation
-        result = 2 * agent.cp * sqrt(2 * log(self.parent.number_visits) / (1 + self.number_visits))  # add 1 to avoid zero division
-        print(result)
-        return result
-        # if self.parent:
-        #     return 2 * agent.cp * sqrt(2 * log(self.parent.number_visits) / (1 + self.number_visits))  # add 1 to avoid zero division
-        # else:
-        #     return 0
-
     def best_child(self, agent):
         """
         :param agent:
@@ -112,10 +70,6 @@ class UCTNode:
         """
         cur_min = -float("inf")
         result = None
-        # for child in self.children.values():
-        #     child_value = child.total_value / (1 + child.number_visits) + 2 * agent.cp * sqrt(2 * log(self.number_visits+1) / (1 + child.number_visits))
-        #     if child_value > cur_min:
-        #         result, cur_min = child, child_value
         for child in self.action_children.values():
             for c in child:
                 if c.number_visits == 0:
@@ -127,17 +81,14 @@ class UCTNode:
 
         # no child, so return self with False
         if not result:
-            # print("error: null child")
             return self, False
         else:
-            # print("success")
             pass
         return result, True
 
     def select_leaf(self, agent):
         """
-        :param agent: UCTAgent
-        :return:
+        depth limited expansion
         """
         current: UCTNode = self
         cur_depth = 0
@@ -159,12 +110,10 @@ class UCTNode:
             for action in self.get_actions():
                 self.add_child(action)
         else:
-            # print("no expansion")
             pass
 
     def add_child(self, action):
         if action in self.action_children:
-            # print("    |", action)
             for child in self.action_children[action]:
                 child.initialize()
         else:
@@ -175,12 +124,6 @@ class UCTNode:
         """
         :return: float: reward
         """
-        # TODO have a simulation function in environment.py,
-        #  1. simulate from current node until scoring phase and have rank as reward (a progress in rank gives +1, keep rank and higher score gives +1,
-        #  keep rank and lower score gives +0.5, etc)
-        #  2. or simulate for N moves and if reach scoring phase before N moves then use the reward above otherwise use a reward for pattern line (....)
-        #  3. how to deal with opponent's action? assume opponent choose the greedy action?
-        # return simulation(self.game_state, self.player_id, self.opponent_id, random_simulation_policy, score_reward)
 
         return simulation(self.game_state, self.player_id, self.opponent_id, random_simulation_policy, delta_score_reward)
 
@@ -234,28 +177,26 @@ class myPlayer(AdvancePlayer):
         timeout = 1
         branching_factor = len(moves)
 
-        BRANCHING_FACTOR_THRESHOLD = 10
+        BRANCHING_FACTOR_THRESHOLD = 6
 
         if branching_factor > BRANCHING_FACTOR_THRESHOLD:
             return self.greedyAgent.SelectMove(moves, game_state)
-            # return random.choice(moves)
+
+        # print to draw diagrams
+        # print("branching factor: ", branching_factor)
 
         root = UCTNode(game_state=game_state, player_id=self.id, opponent_id=self.opponent_id, policy=self.policy,
                        parent_opponent_action=None, parent_move=None, parent=None, moves=moves)
         root.initialize()
 
         counter = 0
-        N_ITER = 200
 
         elapsed = (time.time() - start)
-        timeout_threshold = timeout - 0.1 - elapsed
-        # print("timeout_threshold:", timeout_threshold, "branching factor: ", branching_factor)
+        timeout_threshold = timeout - 0.2 - elapsed
 
         while True:
-            # print("    ", "myPlayer iter =", counter)
             elapsed = (time.time() - start)
             if elapsed >= timeout_threshold:  # prevent 1 second timeout
-                # print("timeout")
                 break
 
             leaf = root.select_leaf(self)
@@ -264,50 +205,94 @@ class myPlayer(AdvancePlayer):
                 return random.choice(moves)
             elapsed = (time.time() - start)
             if elapsed >= timeout_threshold:  # prevent 1 second timeout
-                # print("timeout")
                 break
-            # print("    ", "    select finished, used:", elapsed)
 
             leaf.expand()
             elapsed = (time.time() - start)
             if elapsed >= timeout_threshold:  # prevent 1 second timeout
-                # print("timeout")
                 break
-            # print("    expand finished, used:", elapsed)
 
             simulated_reward = leaf.simulate()
             elapsed = (time.time() - start)
             if elapsed >= timeout_threshold:  # prevent 1 second timeout
-                # print("timeout")
                 break
-            # print("    ","    simulation finished", simulated_reward, ", used:", elapsed)
-
             leaf.back_propagate(simulated_reward)
             elapsed = (time.time() - start)
             if elapsed >= timeout_threshold:  # prevent 1 second timeout
-                # print("timeout")
                 break
-            # print("    ", "    back propagate finished, used:", elapsed)
 
             counter += 1
-        # print("##########", counter, "##########")
+
         cur_min = -float("inf")
         next_action = None
         for action, child in root.action_children.items():
-            child_value = 0  # sum(child, lambda x: x.total_value)
-            # print("    ####", action)
+            child_value = 0
             for c in child:
                 if c.number_visits > 0:
                     child_value += c.total_value / c.number_visits
-                # print("    "*2, c.total_value, c.number_visits)
 
             if child_value > cur_min:
                 cur_min, next_action = child_value, action
 
-        # print(next_action, cur_min)
         elapsed = (time.time() - start)
-        # print("##########", counter, "##########", "total used: ", elapsed, "branching_factor: ", branching_factor)
+
+        # print to draw diagrams
+        # print("time elapsed:", elapsed)
+        # print("n_ter:", counter)
         return next_action
+
+
+def seeTile(tile_grab: TileGrab):
+    print(
+        [tile_grab.tile_type,
+         tile_grab.number,
+         tile_grab.pattern_line_dest,
+         tile_grab.num_to_pattern_line,
+         tile_grab.num_to_floor_line])
+
+
+class PriorityQueue:
+    """
+    Implements a priority queue data structure. Each inserted item
+    has a priority associated with it and the client is usually interested
+    in quick retrieval of the lowest-priority item in the queue. This
+    data structure allows O(1) access to the lowest-priority item.
+    """
+
+    def __init__(self):
+        self.heap = []
+        self.count = 0
+
+    def push(self, item, priority):
+        entry = (priority, self.count, item)
+        heapq.heappush(self.heap, entry)
+        self.count += 1
+
+    def pop(self):
+        (priority, _, item) = heapq.heappop(self.heap)
+        return item
+
+    def pop_priority_item(self):
+        (priority, _, item) = heapq.heappop(self.heap)
+        return priority, item
+
+    def isEmpty(self):
+        return len(self.heap) == 0
+
+    def update(self, item, priority):
+        # If item already in priority queue with higher priority, update its priority and rebuild the heap.
+        # If item already in priority queue with equal or lower priority, do nothing.
+        # If item not in priority queue, do the same thing as self.push.
+        for index, (p, c, i) in enumerate(self.heap):
+            if i == item:
+                if p <= priority:
+                    break
+                del self.heap[index]
+                self.heap.append((priority, c, item))
+                heapq.heapify(self.heap)
+                break
+        else:
+            self.push(item, priority)
 
 
 class GreedyAgent(AdvancePlayer):
@@ -317,7 +302,7 @@ class GreedyAgent(AdvancePlayer):
     # The following function should not be changed at all
     def __init__(self, _id):
         super().__init__(_id)
-        self.weights = [1, -0.4, 0.015]
+        self.weights = [1, -0.4, 0.015, 0.01]
         self.curr_round = -1
 
     # Each player is given 5 seconds when a new round started
@@ -325,8 +310,26 @@ class GreedyAgent(AdvancePlayer):
     # you will receive a timeout warning
     def StartRound(self, game_state: GameState):
         self.curr_round += 1
-        # print("---------- round", self.curr_round, "start ------------")
+        print("---------- round", self.curr_round, "start ------------")
         return None
+
+    def SelectTopMove(self, moves: [(Move, int, TileGrab)], game_state: GameState, n=5):
+        if len(moves) <= n:
+            return moves
+
+        hq = PriorityQueue()
+        for m in moves:
+            q_value = self.getQValue(game_state, m)
+
+            hq.push(m, q_value)
+
+            if hq.count > n:
+                hq.pop()
+
+        result = []
+        while not hq.isEmpty():
+            result.append(hq.pop())
+        return result
 
     # Each player is given 1 second to select next best move
     # If exceeds 5 seconds, all your code will be terminated,
@@ -334,23 +337,15 @@ class GreedyAgent(AdvancePlayer):
     # a timeout warning
     def SelectMove(self, moves: [(Move, int, TileGrab)], game_state: GameState):
         # move[1] is factory ID that illustrate the source of tile, -1 for center
-        move_collection = dict()
-
-        # # FIXME this will timeout, think another way to consider opponent action
-        # for p in game_state.players:
-        #     if p.id != self.id:
-        #         self.other_available = p.GetAvailableMoves()
-
-        for m in moves:
-            move_collection[m] = self.getQValue(game_state, m)
-
         # find the action with highest Q value
         maxQ = float("-inf")
         curr_max = None
-        for key in move_collection.keys():
-            if move_collection[key] > maxQ:
-                curr_max = key
-                maxQ = move_collection[key]
+
+        for m in moves:
+            q_value = self.getQValue(game_state, m)
+            if q_value > maxQ:
+                maxQ = q_value
+                curr_max = m
 
         ns = self.getNextState(game_state, curr_max)
 
@@ -369,14 +364,6 @@ class GreedyAgent(AdvancePlayer):
 
         return q_value
 
-    def update(self, game_state: GameState, action) -> None:
-        """
-            update weight, this will be called at the beginning of each state to
-            update the parameters for previous state and action
-        """
-        next_state = self.getNextState(game_state, action)
-        reward = 0
-
     def featureExtractor(self, game_state: GameState, move: (Move, int, TileGrab)) -> list:
         """
         return the feature that we extract from a specific game state
@@ -388,12 +375,11 @@ class GreedyAgent(AdvancePlayer):
         """
         features = []
         next_state = self.getNextState(game_state, move)
+        expect_gain = self.expectGain(game_state, next_state)
 
         # expected score for the current action exec
-        if self.curr_round < GreedyAgent.IGNORE_BONUS_THRESHOLD:
-            expect_gain = self.expectGain(game_state, next_state)
+        if self.curr_round < self.IGNORE_BONUS_THRESHOLD:
 
-            # TODO: examine this field
             # suppose 90% of game end in 5 rounds
             if move[0] == Move.TAKE_FROM_CENTRE and not game_state.first_player_taken and \
                     self.curr_round < 4:
@@ -406,7 +392,7 @@ class GreedyAgent(AdvancePlayer):
 
             features.append(expect_gain)
         else:
-            features.append(self.expectGain(game_state, next_state))
+            features.append(expect_gain)
 
         # penalise add only a few grad to a long pattern
         tile_grab: TileGrab = move[-1]
@@ -425,11 +411,11 @@ class GreedyAgent(AdvancePlayer):
         # give a slightly higher point to collect more
         features.append(move[-1].num_to_pattern_line)
 
-        # # give bonus to the line that
-        # if tile_grab.pattern_line_dest != -1:
-        #     features.append(line_n[tile_grab.pattern_line_dest])
-        # else:
-        #     features.append(0)
+        # give bonus to the pattern line that already have some tile
+        if tile_grab.pattern_line_dest != -1:
+            features.append(line_n[tile_grab.pattern_line_dest])
+        else:
+            features.append(0)
 
         return features
 
@@ -440,7 +426,8 @@ class GreedyAgent(AdvancePlayer):
         return next_state
 
     def expectGain(self, curr_state, next_state):
-        curr_expected_score, curr_bonus = self.expectScore(curr_state)
+        copy_curr = deepcopy(curr_state)
+        curr_expected_score, curr_bonus = self.expectScore(copy_curr)
         next_expected_score, next_bonus = self.expectScore(next_state)
 
         return next_expected_score + next_bonus - curr_expected_score - curr_bonus
@@ -454,6 +441,3 @@ class GreedyAgent(AdvancePlayer):
         expected_score, _ = my_state.ScoreRound()
         bonus = my_state.EndOfGameScore()
         return expected_score, bonus
-
-    def flipCoin(self) -> bool:
-        return True if random.random() < self.epsilon else False
