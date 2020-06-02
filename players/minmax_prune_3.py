@@ -5,6 +5,7 @@ The implementation of miniMax algorithm
 """
 import heapq
 import sys
+
 sys.path.append("players/StaffTeamEasy")
 
 from advance_model import *
@@ -126,7 +127,7 @@ class myPlayer(AdvancePlayer):
         try:
             return func_timeout(0.7, self.SelectMiniMaxMove, args=(moves, game_state))
         except FunctionTimedOut:
-            print("Time-out", time.clock()-start)
+            print("Time-out", time.clock() - start)
             assert self.top_move is not None
             return self.top_move
 
@@ -141,19 +142,22 @@ class myPlayer(AdvancePlayer):
         current_state = deepcopy(game_state)
         expected_score, _ = current_state.players[self.id].ScoreRound()
         expected_bonus = current_state.players[self.id].EndOfGameScore()
+        opponent_score, _ = current_state.players[self.opponent_id].ScoreRound()
+        opponent_bonus = current_state.players[self.opponent_id].EndOfGameScore()
+        chase = (expected_score + expected_bonus) < (opponent_score + opponent_bonus)
 
-        best_score = (float("-inf"), float("-inf"))
-        best_move = None
+        candidates = []
 
         for move in top_5_actions:
+            diff, gain = self.MiniMax(move, game_state, depth, self.id, expected_score + expected_bonus)
+            candidates.append((diff, gain, move))
 
-            move_score = self.MiniMax(move, game_state, depth, self.id, expected_score+expected_bonus)
-
-            if move_score > best_score:
-                best_score = move_score
-                best_move = move
-
-        return best_move
+        if chase:
+            candidates.sort(key=lambda x: (x[0], x[1]))
+            return candidates[-1][-1]
+        else:
+            candidates.sort(key=lambda x: (x[1], x[0]))
+            return candidates[-1][-1]
 
     def MiniMax(self, move: (Move, int, TileGrab), game_state: GameState, depth: int, player_id: int, root_data: float):
         next_state = deepcopy(game_state)
@@ -524,4 +528,3 @@ class GreedyAgent(AdvancePlayer):
         expected_score, _ = my_state.ScoreRound()
         bonus = my_state.EndOfGameScore()
         return expected_score, bonus
-
