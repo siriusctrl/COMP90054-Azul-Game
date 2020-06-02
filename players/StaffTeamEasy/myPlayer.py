@@ -173,8 +173,6 @@ class myPlayer(AdvancePlayer):
         :param game_state: current game state
         :return:
         """
-        start = time.time()
-        timeout = 1
         branching_factor = len(moves)
 
         BRANCHING_FACTOR_THRESHOLD = 6
@@ -182,8 +180,17 @@ class myPlayer(AdvancePlayer):
         if branching_factor > BRANCHING_FACTOR_THRESHOLD:
             return self.greedyAgent.SelectMove(moves, game_state)
 
+        try:
+            return func_timeout(0.7, self.mcts_move, args=(moves, game_state))
+        except FunctionTimedOut:
+            # print("Time-out", time.clock() - start)
+            return self.greedyAgent.SelectMove(moves, game_state)
+
         # print to draw diagrams
         # print("branching factor: ", branching_factor)
+    def mcts_move(self, moves: [(Move, int, TileGrab)], game_state: GameState):
+        start = time.time()
+        timeout = 1
 
         root = UCTNode(game_state=game_state, player_id=self.id, opponent_id=self.opponent_id, policy=self.policy,
                        parent_opponent_action=None, parent_move=None, parent=None, moves=moves)
@@ -240,7 +247,6 @@ class myPlayer(AdvancePlayer):
         # print("time elapsed:", elapsed)
         # print("n_ter:", counter)
         return next_action
-
 
 def seeTile(tile_grab: TileGrab):
     print(
