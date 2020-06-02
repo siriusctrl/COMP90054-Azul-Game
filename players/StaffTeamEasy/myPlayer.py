@@ -195,9 +195,6 @@ class myPlayer(AdvancePlayer):
         return best_move
 
     def MiniMax(self, move: (Move, int, TileGrab), game_state: GameState, depth: int, player_id: int, root_data: float):
-        current_state = deepcopy(game_state)
-        expected_score, _ = current_state.players[self.id].ScoreRound()
-
         next_state = deepcopy(game_state)
         next_state.ExecuteMove(player_id, move)
         next_player_id = abs(player_id - 1)

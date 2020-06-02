@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-RED=minmax_prune_3
+RED=StaffTeamEasy.myPlayer
 BLUE=naive_player
 
-python runner.py --redName=$RED --blueName=$BLUE -r $RED -b $BLUE -w 1 -m 500 -q -p
+python runner.py --redName=$RED --blueName=$BLUE -r $RED -b $BLUE -w 1 -m 1 -q -p
