@@ -146,7 +146,7 @@ class myPlayer(AdvancePlayer):
         # read from setup file
         self.n_iter = 100
         self.cp = 0.7071
-        self.n_depth = 3
+        self.n_depth = 2
         self.gamma = 0.9
 
         self.opponent_id = None
