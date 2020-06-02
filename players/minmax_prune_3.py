@@ -134,8 +134,7 @@ class myPlayer(AdvancePlayer):
         #             return self.first_move
 
         # If there is no best obvious move, take consider of all possible moves
-        best_score = float("-inf")
-        best_move = None
+
 
         # Right now the depthest level it can reach is only max without min due to time
         depth = 2
@@ -178,11 +177,15 @@ class myPlayer(AdvancePlayer):
         expected_score, _ = current_state.players[self.id].ScoreRound()
         expected_bonus = current_state.players[self.id].EndOfGameScore()
 
+        best_score = (float("-inf"), float("-inf"))
+        best_move = None
+
         for move in top_5_actions:
             print("top n:", move[0], move[1], seeTile(move[2]), self.greedy_agent.getQValue(game_state, move),
                   "v.s.", self.ExpectScoreAfterMyMove(move, game_state, expected_score))
             move_score = self.MiniMax(move, game_state, depth, self.id, expected_score+expected_bonus)
             print("   ", "action's minimax score:", move_score)
+
             if move_score > best_score:
                 best_score = move_score
                 best_move = move
@@ -242,7 +245,7 @@ class myPlayer(AdvancePlayer):
             top_5_actions = self.greedy_agent.SelectTopMove(next_player_moves, next_state, 5)
             # top_5_actions = self.SelectTopMove(next_player_moves, next_state, 5)
 
-            best_score = float("-inf")
+            best_score = (float("-inf"), float("-inf"))
             best_action = None
             for my_move in top_5_actions:
                 move_score = self.MiniMax(my_move, next_state, new_depth, next_player_id, root_data)
@@ -265,13 +268,17 @@ class myPlayer(AdvancePlayer):
                 return self.expect_gain_with_root(next_state, root_data)
             return move_score
 
-    def expect_gain_with_root(self, curr_state: GameState, root_data: float) -> float:
+    def expect_gain_with_root(self, curr_state: GameState, root_data: float) -> (float, float):
         copy_curr: GameState = deepcopy(curr_state)
         curr_player = copy_curr.players[self.id]
         expect_score, _ = curr_player.ScoreRound()
         expect_bonus = curr_player.EndOfGameScore()
 
-        return expect_score + expect_bonus - root_data
+        curr_opponent = copy_curr.players[self.opponent_id]
+        op_score, _ = curr_opponent.ScoreRound()
+        op_bonus = curr_opponent.EndOfGameScore()
+
+        return expect_score + expect_bonus - op_score - op_bonus, expect_score + expect_bonus - root_data
 
     def SelectTopMove(self, moves: [(Move, int, TileGrab)], game_state: GameState, n=5):
         if len(moves) <= n:
