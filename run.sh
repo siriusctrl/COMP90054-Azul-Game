@@ -2,4 +2,4 @@
 RED=minmax_prune_3
 BLUE=naive_player
 
-python runner.py --redName=$RED --blueName=$BLUE -r $RED -b $BLUE -w 1 -m 100 -q
+python runner.py --redName=$RED --blueName=$BLUE -r $RED -b $BLUE -w 1 -m 500 -q -p

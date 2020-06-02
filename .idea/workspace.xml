@@ -25,7 +25,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0a66df85-4b3c-4c1b-8c2c-68479495e361" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/players/StaffTeamEasy/old_greedy.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/players/StaffTeamEasy/myPlayer.py" beforeDir="false" afterPath="$PROJECT_DIR$/players/StaffTeamEasy/myPlayer.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/players/minmax_prune_3.py" beforeDir="false" afterPath="$PROJECT_DIR$/players/minmax_prune_3.py" afterDir="false" />
