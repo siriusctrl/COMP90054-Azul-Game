@@ -27,8 +27,6 @@
     <list default="true" id="0a66df85-4b3c-4c1b-8c2c-68479495e361" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/players/StaffTeamEasy/myPlayer.py" beforeDir="false" afterPath="$PROJECT_DIR$/players/StaffTeamEasy/myPlayer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/players/minmax_prune_3.py" beforeDir="false" afterPath="$PROJECT_DIR$/players/minmax_prune_3.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/run.sh" beforeDir="false" afterPath="$PROJECT_DIR$/run.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,12 +46,13 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/players/StaffTeamEasy" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/players/compare" />
     <property name="node.js.path.for.package.tslint" value="project" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/players/compare" />
       <recent name="$PROJECT_DIR$/players/StaffTeamEasy" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
