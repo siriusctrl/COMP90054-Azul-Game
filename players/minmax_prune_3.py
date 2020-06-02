@@ -37,6 +37,8 @@ class myPlayer(AdvancePlayer):
         self.opponent_agent = GreedyAgent(self.opponent_id)
         self.greedy_agent = GreedyAgent(self.id)
 
+        self.top_move = None
+
     def advance_get_available_actions(self, moves: [(Move, int, TileGrab)], game_state: GameState, player_id: int):
         player_state = game_state.players[player_id]
 
@@ -119,76 +121,39 @@ class myPlayer(AdvancePlayer):
         #                 return move
         return None
 
-    def SelectMove(self, moves: [(Move, int, TileGrab)], game_state: GameState):
-        """
-        using the algorithm of miniMax to select the move
-        the idea is to select some best actions first, then select some worst action to me
-        for the opponent based on my selection, and based on his selection, choose
-        my best selections and keep repeating until no time left
-        The benefit is to lower bound the worst that opponent can lead to
-        """
-
-        # First of all, consider the first move decided at the start of the turn
-        # if self.is_my_first_move:
-        #     self.is_my_first_move = False
-        #     if self.first_move is not None:
-        #         if self.first_move in moves:
-        #             return self.first_move
-
-        # If there is no best obvious move, take consider of all possible moves
-
-        starting_time = time.clock()
-        # Right now the depthest level it can reach is only max without min due to time
-        depth = 2
-        # possible move to add 1 grid, 2 grid and so on
-        # possible_fill = [0, 0, 0, 0, 0]
-        # for move in moves:
-        #     tile_grab = move[2]
-        #     if tile_grab.num_to_floor_line == 0:
-        #         possible_fill[tile_grab.num_to_pattern_line - 1] += 1
-
-        # actions_size = len(moves)
-        # my_advance_actions = self.advance_get_available_actions(moves, game_state, self.id)
-        # type_1_size = len(my_advance_actions[0])
-        #
-        # if type_1_size > 0.1 * actions_size:
-        #     my_advance_actions = my_advance_actions[0]
-        # else:
-        #     my_advance_actions = my_advance_actions[0] + my_advance_actions[1] + my_advance_actions[2]
-
-        # print(len(my_advance_actions))
-        top_5_actions = self.greedy_agent.SelectTopMove(moves, game_state, 7)
-
-        def startMinMax():
-            current_state = deepcopy(game_state)
-            expected_score, _ = current_state.players[self.id].ScoreRound()
-            expected_bonus = current_state.players[self.id].EndOfGameScore()
-
-            best_score = (float("-inf"), float("-inf"))
-            best_move = None
-
-            for move in top_5_actions:
-                # print("top n:", move[0], move[1], seeTile(move[2]), self.greedy_agent.getQValue(game_state, move),
-                #       "v.s.", self.ExpectScoreAfterMyMove(move, game_state, expected_score))
-                move_score = self.MiniMax(move, game_state, depth, self.id, expected_score+expected_bonus)
-                # print("   ", "action's minimax score:", move_score)
-
-                if move_score > best_score:
-                    best_score = move_score
-                    best_move = move
-            # print("best: ", best_move[0], best_move[1], seeTile(best_move[2]), self.greedy_agent.getQValue(game_state, best_move),
-            #       "v.s.", self.ExpectScoreAfterMyMove(best_move, game_state, expected_score))
-            # print("---------")
-            return best_move
-
+    def SelectMove(self, moves, game_state):
+        start = time.clock()
         try:
-            # print("remaining = ", 0.95+starting_time-time.clock())
-            remaining = 0.95 + starting_time - time.clock()
-            select = func_timeout(remaining, startMinMax)
-            return select
+            return func_timeout(0.7, self.SelectMiniMaxMove, args=(moves, game_state))
         except FunctionTimedOut:
-            return top_5_actions[-1]
+            print("Time-out", time.clock()-start)
+            assert self.top_move is not None
+            return self.top_move
 
+    def SelectMiniMaxMove(self, moves: [(Move, int, TileGrab)], game_state: GameState):
+        self.top_move = None
+
+        depth = 2
+        top_5_actions = self.greedy_agent.SelectTopMove(moves, game_state, 5)
+
+        self.top_move = top_5_actions[-1]
+
+        current_state = deepcopy(game_state)
+        expected_score, _ = current_state.players[self.id].ScoreRound()
+        expected_bonus = current_state.players[self.id].EndOfGameScore()
+
+        best_score = (float("-inf"), float("-inf"))
+        best_move = None
+
+        for move in top_5_actions:
+
+            move_score = self.MiniMax(move, game_state, depth, self.id, expected_score+expected_bonus)
+
+            if move_score > best_score:
+                best_score = move_score
+                best_move = move
+
+        return best_move
 
     def MiniMax(self, move: (Move, int, TileGrab), game_state: GameState, depth: int, player_id: int, root_data: float):
         next_state = deepcopy(game_state)
@@ -217,23 +182,7 @@ class myPlayer(AdvancePlayer):
 
         # maximum score part
         if next_player_id == self.id:
-            # actions_size = len(next_player_moves)
-            # my_advance_actions = self.advance_get_available_actions(next_player_moves, next_state, self.id)
-            # type_1_size = len(my_advance_actions[0])
-            #
-            # if type_1_size / actions_size > 0.1:
-
-            # actions_size = len(next_player_moves)
-            # my_advance_actions = self.advance_get_available_actions(next_player_moves, next_state, self.id)
-            # type_1_size = len(my_advance_actions[0])
-            #
-            # if type_1_size > 0.1 * actions_size:
-            #     my_advance_actions = my_advance_actions[0]
-            # else:
-            #     my_advance_actions = my_advance_actions[0] + my_advance_actions[1] + my_advance_actions[2]
-
-            # print(len(my_advance_actions))
-            top_5_actions = self.greedy_agent.SelectTopMove(next_player_moves, next_state, 7)
+            top_5_actions = self.greedy_agent.SelectTopMove(next_player_moves, next_state, 5)
             # top_5_actions = self.SelectTopMove(next_player_moves, next_state, 5)
 
             best_score = (float("-inf"), float("-inf"))

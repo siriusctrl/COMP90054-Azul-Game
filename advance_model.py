@@ -143,10 +143,12 @@ class AdvanceGameRunner:
 
                 gs_copy = copy.deepcopy(self.game_state)
                 moves_copy = copy.deepcopy(moves)
-                
+
+                start = time.clock()
                 try:
                     selected = func_timeout(self.time_limit,self.players[i].SelectMove,args=(moves_copy, gs_copy))
                 except:
+                    print(time.clock() - start)
                     import traceback
                     traceback.print_tb()
                     exit(0)
