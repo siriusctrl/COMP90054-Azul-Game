@@ -172,7 +172,7 @@ class myPlayer(AdvancePlayer):
         #           )
         # print("------- top 5 end -----")
         # print(top_5_actions)
-        print(len(top_5_actions), top_5_actions)
+        # print(len(top_5_actions), top_5_actions)
         current_state = deepcopy(game_state)
         expected_score, _ = current_state.players[self.id].ScoreRound()
         expected_bonus = current_state.players[self.id].EndOfGameScore()
@@ -181,17 +181,17 @@ class myPlayer(AdvancePlayer):
         best_move = None
 
         for move in top_5_actions:
-            print("top n:", move[0], move[1], seeTile(move[2]), self.greedy_agent.getQValue(game_state, move),
-                  "v.s.", self.ExpectScoreAfterMyMove(move, game_state, expected_score))
+            # print("top n:", move[0], move[1], seeTile(move[2]), self.greedy_agent.getQValue(game_state, move),
+            #       "v.s.", self.ExpectScoreAfterMyMove(move, game_state, expected_score))
             move_score = self.MiniMax(move, game_state, depth, self.id, expected_score+expected_bonus)
-            print("   ", "action's minimax score:", move_score)
+            # print("   ", "action's minimax score:", move_score)
 
             if move_score > best_score:
                 best_score = move_score
                 best_move = move
-        print("best: ", best_move[0], best_move[1], seeTile(best_move[2]), self.greedy_agent.getQValue(game_state, best_move),
-              "v.s.", self.ExpectScoreAfterMyMove(best_move, game_state, expected_score))
-        print("---------")
+        # print("best: ", best_move[0], best_move[1], seeTile(best_move[2]), self.greedy_agent.getQValue(game_state, best_move),
+        #       "v.s.", self.ExpectScoreAfterMyMove(best_move, game_state, expected_score))
+        # print("---------")
         return best_move
 
     def MiniMax(self, move: (Move, int, TileGrab), game_state: GameState, depth: int, player_id: int, root_data: float):
@@ -249,11 +249,12 @@ class myPlayer(AdvancePlayer):
             best_action = None
             for my_move in top_5_actions:
                 move_score = self.MiniMax(my_move, next_state, new_depth, next_player_id, root_data)
+
                 if move_score > best_score:
                     best_score = move_score
                     best_action = my_move
-            print("*********   depth=", depth, "   best action is", end="   ")
-            seeTile(best_action[2])
+            # print("*********   depth=", depth, "   best action is", end="   ")
+            # seeTile(best_action[2])
             return best_score
 
         # minimal score part
@@ -379,24 +380,6 @@ class myPlayer(AdvancePlayer):
             elif tile_colour == 2:
                 final_score += 0.00004
 
-        # # Feature 7: If there are some same tiles with same amount in the factory or in the center
-        # # we don't need to fill the current tile so hurry
-        # find_same = 0
-        # for i in [0, 5]:
-        #     if game_state.factories[0].tiles[tile_colour] == num_add_to_line:
-        #         find_same += 1
-        # if find_same < 3:
-        #     if game_state.centre_pool.tiles[tile_colour] == num_add_to_line:
-        #         find_same += 1
-        #
-        # if find_same >= 3:
-        #     final_score -= 10
-        #
-        # # Feature 8: give bonus to the pattern line that already have some tile
-        # if tile_grab.pattern_line_dest != -1:
-        #     final_score += line_n[tile_grab.pattern_line_dest] * 0.0001
-
-
         return final_score
 
 
@@ -470,7 +453,7 @@ class GreedyAgent(AdvancePlayer):
     # you will receive a timeout warning
     def StartRound(self, game_state: GameState):
         self.curr_round += 1
-        print("---------- round", self.curr_round, "start ------------")
+        # print("---------- round", self.curr_round, "start ------------")
         return None
 
     def SelectTopMove(self, moves: [(Move, int, TileGrab)], game_state: GameState, n=5):
