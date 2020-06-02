@@ -137,7 +137,7 @@ class myPlayer(AdvancePlayer):
 
         # If there is no best obvious move, take consider of all possible moves
 
-
+        starting_time = time.clock()
         # Right now the depthest level it can reach is only max without min due to time
         depth = 2
         # possible move to add 1 grid, 2 grid and so on
@@ -157,7 +157,7 @@ class myPlayer(AdvancePlayer):
         #     my_advance_actions = my_advance_actions[0] + my_advance_actions[1] + my_advance_actions[2]
 
         # print(len(my_advance_actions))
-        top_5_actions = self.greedy_agent.SelectTopMove(moves, game_state, 5)
+        top_5_actions = self.greedy_agent.SelectTopMove(moves, game_state, 7)
 
         def startMinMax():
             current_state = deepcopy(game_state)
@@ -182,9 +182,11 @@ class myPlayer(AdvancePlayer):
             return best_move
 
         try:
-            return func_timeout(0.9, startMinMax)
+            # print("remaining = ", 0.95+starting_time-time.clock())
+            remaining = 0.95 + starting_time - time.clock()
+            select = func_timeout(remaining, startMinMax)
+            return select
         except FunctionTimedOut:
-            print("time-out")
             return top_5_actions[-1]
 
 
@@ -231,7 +233,7 @@ class myPlayer(AdvancePlayer):
             #     my_advance_actions = my_advance_actions[0] + my_advance_actions[1] + my_advance_actions[2]
 
             # print(len(my_advance_actions))
-            top_5_actions = self.greedy_agent.SelectTopMove(next_player_moves, next_state, 5)
+            top_5_actions = self.greedy_agent.SelectTopMove(next_player_moves, next_state, 7)
             # top_5_actions = self.SelectTopMove(next_player_moves, next_state, 5)
 
             best_score = (float("-inf"), float("-inf"))
