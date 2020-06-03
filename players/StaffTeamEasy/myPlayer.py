@@ -19,7 +19,7 @@ class myPlayer(AdvancePlayer):
 
     def __init__(self, _id):
         super().__init__(_id)
-        self.round = 0
+        self.curr_round = 0
 
         # weight settings, minimal scale of weight is 0.00001
         self.neighbour_weight = 0.01
@@ -43,7 +43,7 @@ class myPlayer(AdvancePlayer):
 
     def StartRound(self, game_state):
         # we have an increasing focus on the bonus as the game goes
-        self.round += 1
+        self.curr_round += 1
         self.turn = 0
         self.final_bonus_weight += 0.2
         self.final_bonus_weight = min(self.final_bonus_weight, 1)
@@ -54,12 +54,15 @@ class myPlayer(AdvancePlayer):
         # start = time.clock()
         try:
             self.turn += 1
+            self.greedy_agent.curr_round = self.curr_round
             # select move for the first two turn as there is not much extra info minmax can provide
             # but by doing this can prevent timeout
             if self.turn < 2:
                 return self.greedy_agent.SelectMove(moves, game_state)
-
             self.top_move = None
+
+            # this function normally needs 0.1-0.2s invocation time, reduce computational time to fit
+            # the gap
             return func_timeout(0.7, self.SelectMiniMaxMove, args=(moves, game_state))
         except FunctionTimedOut:
             # print("Time-out", time.clock() - start)
@@ -190,7 +193,7 @@ class myPlayer(AdvancePlayer):
         # currently, if it is the first turn, shrink the positive reward to minimal size
         expected_score, _ = my_state.ScoreRound()
         score_changes = expected_score - neighbour_bonus
-        if self.round <= self.ROUND_IGNORE_NEIGHBOUR_BONUS and score_changes > 0:
+        if self.curr_round <= self.ROUND_IGNORE_NEIGHBOUR_BONUS and score_changes > 0:
             final_score = score_changes * self.neighbour_weight
         else:
             final_score = score_changes
@@ -199,8 +202,8 @@ class myPlayer(AdvancePlayer):
         # first turn 0.6, second turn 0.8 then 1
         # TODO changes of bonus
         bonus = my_state.EndOfGameScore()
-        if self.round <= self.ROUND_IGNORE_FINAL_BONUS:
-            final_score += bonus * self.ROUND_IGNORE_FINAL_BONUS
+        if self.curr_round <= self.ROUND_IGNORE_FINAL_BONUS:
+            final_score += bonus * self.curr_round_IGNORE_FINAL_BONUS
         else:
             final_score += bonus
 
@@ -208,9 +211,9 @@ class myPlayer(AdvancePlayer):
         # we may want the first player, according to the strategy, it finishes at turn 5
         if move[0] == Move.TAKE_FROM_CENTRE and not game_state.first_player_taken:
             # first two turn it is not so important, but better if no other choice
-            if self.round < 3:
+            if self.curr_round < 3:
                 final_score += 0.00001
-            elif self.round < 5:
+            elif self.curr_round < 5:
                 final_score += 1.00001
 
         # Feature 4: Penalise when add only a few grad to a long pattern
@@ -400,7 +403,6 @@ class GreedyAgent(AdvancePlayer):
         # expected score for the current action exec
         if self.curr_round < self.IGNORE_BONUS_THRESHOLD:
 
-            # TODO: examine this field
             # suppose 90% of game end in 5 rounds
             if move[0] == Move.TAKE_FROM_CENTRE and not game_state.first_player_taken and \
                     self.curr_round < 4:
