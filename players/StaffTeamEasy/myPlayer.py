@@ -33,8 +33,6 @@ class myPlayer(AdvancePlayer):
         self.is_my_first_move = False
         self.first_move = None
 
-        self.discount = 0.7
-
         self.opponent_id = abs(1 - self.id)
         self.opponent_agent = GreedyAgent(self.opponent_id)
         self.greedy_agent = GreedyAgent(self.id)
@@ -45,8 +43,6 @@ class myPlayer(AdvancePlayer):
         # we have an increasing focus on the bonus as the game goes
         self.curr_round += 1
         self.turn = 0
-        self.final_bonus_weight += 0.2
-        self.final_bonus_weight = min(self.final_bonus_weight, 1)
 
         return None
 
@@ -61,7 +57,7 @@ class myPlayer(AdvancePlayer):
                 return self.greedy_agent.SelectMove(moves, game_state)
             self.top_move = None
 
-            # this function normally needs 0.1-0.2s invocation time, reduce computational time to fit
+            # this function normally needs extra 0.1-0.2s invocation time, reduce computational time to fit
             # the gap
             return func_timeout(0.7, self.SelectMiniMaxMove, args=(moves, game_state))
         except FunctionTimedOut:
@@ -104,22 +100,16 @@ class myPlayer(AdvancePlayer):
         # finish diving when it is the highest depth or the end of the game
 
         if depth == 0:
-            # return self.greedy_agent.getQValue(game_state, move)
-            # return self.ExpectScoreAfterMyMove(move, game_state, expected_score)
             return self.expect_gain_with_root(next_state, root_data)
-
-        # get the state after the move
 
         new_depth = depth - 1
 
         # check all possible moves for next player, if none, return current state value
         next_player_moves = next_state.players[next_player_id].GetAvailableMoves(next_state)
         if len(next_player_moves) == 0:
-            # return self.greedy_agent.getQValue(game_state, move)
             if player_id == self.opponent_id:
                 return False
             else:
-                # return self.ExpectScoreAfterMyMove(move, game_state, expected_score)
                 return self.expect_gain_with_root(next_state, root_data)
 
         # maximum score part
@@ -141,8 +131,7 @@ class myPlayer(AdvancePlayer):
             opponent_move = self.opponent_agent.SelectMove(next_player_moves, next_state)
             move_score = self.MiniMax(opponent_move, next_state, new_depth, next_player_id, root_data)
 
-            if move_score == False:
-                # return self.ExpectScoreAfterMyMove(move, game_state, expected_score)
+            if not move_score:
                 return self.expect_gain_with_root(next_state, root_data)
             return move_score
 
@@ -166,7 +155,6 @@ class myPlayer(AdvancePlayer):
         for m in moves:
             current_state = deepcopy(game_state)
             expected_score, _ = current_state.players[self.id].ScoreRound()
-            # q_value = self.ExpectScoreAfterMyMove(m, game_state, expected_score)
             q_value = self.greedy_agent.getQValue(game_state, m)
 
             hq.push(m, q_value)
@@ -179,90 +167,6 @@ class myPlayer(AdvancePlayer):
             result.append(hq.pop())
 
         return result
-
-    def ExpectScoreAfterMyMove(self, move: (Move, int, TileGrab), game_state: GameState, neighbour_bonus: float):
-        """
-        The most significant function that calculate the score for the move
-        """
-        state_after_move = deepcopy(game_state)
-        # print((move[0], move[1], seeTile(move[2])))
-        state_after_move.ExecuteMove(self.id, move)
-        my_state = state_after_move.players[self.id]
-
-        # Feature 1: The neighbour bonus
-        # currently, if it is the first turn, shrink the positive reward to minimal size
-        expected_score, _ = my_state.ScoreRound()
-        score_changes = expected_score - neighbour_bonus
-        if self.curr_round <= self.ROUND_IGNORE_NEIGHBOUR_BONUS and score_changes > 0:
-            final_score = score_changes * self.neighbour_weight
-        else:
-            final_score = score_changes
-
-        # Feature 2: The column or diagonal or row bonus
-        # first turn 0.6, second turn 0.8 then 1
-        # TODO changes of bonus
-        bonus = my_state.EndOfGameScore()
-        if self.curr_round <= self.ROUND_IGNORE_FINAL_BONUS:
-            final_score += bonus * self.curr_round_IGNORE_FINAL_BONUS
-        else:
-            final_score += bonus
-
-        # Feature 3: Become the first player for next turn
-        # we may want the first player, according to the strategy, it finishes at turn 5
-        if move[0] == Move.TAKE_FROM_CENTRE and not game_state.first_player_taken:
-            # first two turn it is not so important, but better if no other choice
-            if self.curr_round < 3:
-                final_score += 0.00001
-            elif self.curr_round < 5:
-                final_score += 1.00001
-
-        # Feature 4: Penalise when add only a few grad to a long pattern
-        tile_grab = move[2]
-        target_line = tile_grab.pattern_line_dest
-        num_add_to_line = tile_grab.num_to_pattern_line
-        line_n = game_state.players[self.id].lines_number
-        # when it is not add to the floor
-        if tile_grab.pattern_line_dest != -1:
-            # when the row currently is empty
-            if line_n[target_line] == 0:
-                # total capacity - # we going to add
-                final_score += self.long_empty_penalty * (target_line + 1 - num_add_to_line)
-
-        # Feature 5: give a slightly higher point to collect more
-        final_score += num_add_to_line * self.fill_bonus
-
-        # Feature 6: When the added tile is close the center, it is better
-        tile_colour = tile_grab.tile_type
-        if target_line == 0 or target_line == 4:
-            if tile_colour == 1 or tile_colour == 3:
-                final_score += 0.00001
-            elif tile_colour == 2:
-                final_score += 0.00002
-        elif target_line == 1 or target_line == 3:
-            if tile_colour == 0 or tile_colour == 4:
-                final_score += 0.00001
-            if tile_colour == 1 or tile_colour == 3:
-                final_score += 0.00002
-            elif tile_colour == 2:
-                final_score += 0.00003
-        elif target_line == 2:
-            if tile_colour == 0 or tile_colour == 4:
-                final_score += 0.00002
-            if tile_colour == 1 or tile_colour == 3:
-                final_score += 0.00003
-            elif tile_colour == 2:
-                final_score += 0.00004
-
-        return final_score
-
-
-def seeTile(tile_grab: TileGrab):
-    print(
-        [tile_grab.tile_type,
-         tile_grab.number,
-         tile_grab.pattern_line_dest,
-         tile_grab.num_to_pattern_line,
-         tile_grab.num_to_floor_line])
 
 
 class PriorityQueue:
@@ -284,12 +188,10 @@ class PriorityQueue:
 
     def pop(self):
         (priority, _, item) = heapq.heappop(self.heap)
-        # print(priority, item)
         return item
 
     def pop_priority_item(self):
         (priority, _, item) = heapq.heappop(self.heap)
-        # print(priority, item)
         return priority, item
 
     def isEmpty(self):
@@ -326,7 +228,6 @@ class GreedyAgent(AdvancePlayer):
     # you will receive a timeout warning
     def StartRound(self, game_state: GameState):
         self.curr_round += 1
-        # print("---------- round", self.curr_round, "start ------------")
         return None
 
     def SelectTopMove(self, moves: [(Move, int, TileGrab)], game_state: GameState, n=5):
@@ -334,23 +235,16 @@ class GreedyAgent(AdvancePlayer):
             return moves
 
         hq = PriorityQueue()
-        # print("###########")
         for m in moves:
-            # print("###########", m)
             q_value = self.getQValue(game_state, m)
-            # print("###########1", m)
-
             hq.push(m, q_value)
 
             if hq.count > n:
                 hq.pop()
-            # print("###########2", m)
 
         result = []
-        # print("------- start ------")
         while not hq.isEmpty():
             result.append(hq.pop())
-        # print("------- end ------")
         return result
 
     # Each player is given 1 second to select next best move
@@ -369,11 +263,6 @@ class GreedyAgent(AdvancePlayer):
                 maxQ = q_value
                 curr_max = m
 
-        ns = self.getNextState(game_state, curr_max)
-
-        # print("   ", self.id, ":", self.featureExtractor(game_state, curr_max))
-        # print("   ", "this:", self.expectScore(game_state), " that:", self.expectScore(ns))
-        # print("")
         return curr_max
 
     def getQValue(self, game_state: GameState, action) -> float:
