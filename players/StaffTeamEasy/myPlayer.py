@@ -59,15 +59,16 @@ class myPlayer(AdvancePlayer):
             if self.turn < 2:
                 return self.greedy_agent.SelectMove(moves, game_state)
 
+            self.top_move = None
             return func_timeout(0.7, self.SelectMiniMaxMove, args=(moves, game_state))
         except FunctionTimedOut:
             # print("Time-out", time.clock() - start)
-            assert self.top_move is not None
-            return self.top_move
+            if self.top_move is not None:
+                return self.top_move
+            else:
+                return random.choice(moves)
 
     def SelectMiniMaxMove(self, moves: [(Move, int, TileGrab)], game_state: GameState):
-        self.top_move = None
-
         depth = 2
         top_5_actions = self.greedy_agent.SelectTopMove(moves, game_state, 5)
 
