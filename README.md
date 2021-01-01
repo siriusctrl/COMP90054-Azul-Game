@@ -17,6 +17,7 @@ Some information about the game:
 
 # Competition
 - Rank 4/68 
+  - <img width="50%" src="docs/competition1.jpg"/><img width="50%" src="docs/competition2.jpg"/>
   - [details](./docs/competition_results/)
 
 # Implemented agents
