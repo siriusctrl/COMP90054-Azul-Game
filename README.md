@@ -22,6 +22,68 @@ Some information about the game:
 # Implemented agents
 - <img width="50%" src="./docs/tags.jpg"/>
 
+# Results
+- ```
+  Dear Xulin Yang:
+
+    This email is automatically generated as the feedback on your score for the  
+    Azul Group Project. Your total score is:
+
+    (28.27/7)
+
+    ---------------------- Your Team details ------------------------
+    [Team Name]: StaffTeamEasy
+    [Team Url]: https://gitlab.eng.unimelb.edu.au/xinyaon/comp90054-2020s1-azul
+
+    ---------------------- Team Score Details -----------------------
+    Code Performance:
+    [Rank]: 4 out of 65 teams, which is the highest rank between two final  
+    tournaments
+    [Score]: (8.77/10), which is your team's highest score between two final  
+    tournaments
+
+    Video:
+    [Score]: (3.5/5)
+    [Feedback]: "Video presentation is clear but  lacks stucture. Demos could  
+    be improved by showing weekness and stength of different agents.  
+    Presentation not of high quality, or some design decisions/challenges  
+    missing"
+
+    Report:
+    [Score]: (16/20)
+    [Feedback]: "Good structure or writing; Decision decisions/techniques  
+    unclear. Techniques used should be explained (MCTS); Chosen techniques  
+    suitable but a limited justification of why techniques are chosen.  
+    Improvement suggested bit week."
+
+    Penalty:
+    [Percentage]: 0%
+    [Feedback]: N/A
+
+    Team Total score: (28.27/35)
+
+    ---------------------- Individual Score Details --------------------
+    Contribution penalty: 0%
+    Final Individual Score: (28.27/35)
+
+
+    ------------------ Important Message ---------------
+    1. Please check your team details to make sure those information are  
+    correct:)
+    2. If your contribution penalty is not 0%, which means there is a conflict  
+    of contribution distribution in your team. You should have received an  
+    email from me asking about this. If you haven't received or replied, please  
+    send email to guang.hu@unimelb.edu.au ASAP.
+    3. Your mark will be updated to Canvas shortly.
+
+    Good luck in your exams:)
+
+
+
+  Kind regards,
+  Teaching Team of COMP90054
+  ```
+
 # AZUL GUI
 
 This repository contains a framework to support developing autonomous agents for the boardgame AZUL, published by Plan B Games. The game frame is forked from [Michelle Blom](https://github.com/michelleblom)'s repository, and GUI is developed by [Guang Hu](https://github.com/guanghuhappysf128) and  [Ruihan Zhang](https://github.com/zhangrh93). The code is in Python 3.
