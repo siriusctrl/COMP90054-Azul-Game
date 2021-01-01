@@ -9,6 +9,19 @@ Some information about the game:
 - https://boardgamegeek.com/boardgame/230802/azul
 - https://www.planbgames.com/en/news/azul-c16.html -->
 
+# Report
+- [link](./docs/COMP90054_Assignment_3_Report.pdf)
+
+# Presentation
+- [link](https://youtu.be/kd_EsLFdQzE)
+
+# Competition
+- Rank 4/68 
+  - [details](./docs/competition_results/)
+
+# Implemented agents
+- <img width="50%" src="./docs/tags.jpg"/>
+
 # AZUL GUI
 
 This repository contains a framework to support developing autonomous agents for the boardgame AZUL, published by Plan B Games. The game frame is forked from [Michelle Blom](https://github.com/michelleblom)'s repository, and GUI is developed by [Guang Hu](https://github.com/guanghuhappysf128) and  [Ruihan Zhang](https://github.com/zhangrh93). The code is in Python 3.
